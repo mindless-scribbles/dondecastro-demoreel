@@ -6,7 +6,7 @@ const navItems = [
 ];
 ---
 
-<header class="flex justify-between items-start w-full">
+<header class="flex justify-between items-start w-full relative z-20 px-3 py-2 md:px-4 md:py-3">
   <a href="/" class="brand" aria-label="MS — Creative Agency, home">
     <span class="brand-letters">
       <span class="brand-m">M</span>
@@ -27,8 +27,30 @@ const navItems = [
 </header>
 
 <style>
+  header {
+    padding-top: 0.75rem;
+  }
+
+  @media (min-width: 768px) {
+    header {
+      padding-top: 1rem;
+    }
+  }
+
+  @media (max-width: 1024px) and (orientation: landscape) {
+    header {
+      padding-top: 0.5rem;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    header {
+      padding-top: 0.75rem;
+    }
+  }
+
   .brand {
-    color: var(--color-text);
+    color: rgba(82, 82, 91, 0.8);
     text-decoration: none;
     display: flex;
     flex-direction: column;
@@ -44,27 +66,27 @@ const navItems = [
 
   .brand-m {
     font-family: var(--font-serif);
-    font-size: 2.2rem;
+    font-size: 1.98rem;
     font-weight: 600;
     letter-spacing: -0.04em;
-    color: var(--color-text);
+    color: rgba(82, 82, 91, 0.8);
   }
 
   .brand-s {
     font-family: var(--font-serif);
-    font-size: 2.4rem;
+    font-size: 2.16rem;
     font-weight: 400;
     font-style: italic;
     letter-spacing: -0.02em;
     color: transparent;
-    -webkit-text-stroke: 1px var(--color-text);
+    -webkit-text-stroke: 1px rgba(82, 82, 91, 0.8);
   }
 
   .brand-sub {
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.585rem;
     font-weight: 400;
-    color: var(--color-accent);
+    color: rgba(255, 51, 0, 0.55);
     margin-top: -2px;
   }
 
@@ -77,10 +99,10 @@ const navItems = [
 
   .nav-link {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.675rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--color-text);
+    color: rgba(82, 82, 91, 0.8);
     text-decoration: none;
     position: relative;
     display: inline-block;
@@ -110,19 +132,19 @@ const navItems = [
 
   @media (max-width: 1024px) {
     .brand-m {
-      font-size: 1.8rem;
+      font-size: 1.62rem;
     }
 
     .brand-s {
-      font-size: 2rem;
+      font-size: 1.8rem;
     }
 
     .brand-sub {
-      font-size: 0.6rem;
+      font-size: 0.54rem;
     }
 
     .nav-link {
-      font-size: 0.65rem;
+      font-size: 0.585rem;
     }
   }
 
@@ -133,21 +155,21 @@ const navItems = [
     }
 
     .nav-link {
-      font-size: 0.6rem;
+      font-size: 0.54rem;
     }
   }
 
   @media (max-width: 768px) and (orientation: portrait) {
     .brand-m {
-      font-size: 1.5rem;
+      font-size: 1.35rem;
     }
 
     .brand-s {
-      font-size: 1.7rem;
+      font-size: 1.53rem;
     }
 
     .brand-sub {
-      font-size: 0.55rem;
+      font-size: 0.495rem;
       margin-top: -1px;
     }
   }
