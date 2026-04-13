@@ -2,23 +2,21 @@
 // Hero block shown on the homepage. Static — no loader, no canvas.
 ---
 
-<section class="flex justify-between items-end w-full">
-  <div class="flex flex-col gap-8 max-w-5xl">
-    <h1 class="hero-title">
-      <span class="word word-primary">Don</span>
-      <span class="word word-secondary"
-        ><span class="sub-de">De</span> <span class="sub-castro">Castro</span></span
-      >
-    </h1>
-
-    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 mt-4">
-      <p class="tagline">
-        Technical Animator &amp; Motion Edit Supervisor. Feature film, AAA
-        games, virtual production.
-      </p>
-      <a href="/reel" class="cta">View Reel</a>
-    </div>
+<section class="flex flex-col items-center w-full relative z-20 text-center mb-[4.5rem] md:mb-[9rem]">
+  <div class="hero-content">
+    <h1 class="hero-title">Don De Castro</h1>
+    <p class="tagline">
+      Technical Animator &amp; Motion Edit Supervisor.<br />
+      Feature film, AAA games, virtual production.
+    </p>
   </div>
+  <button class="play-btn" type="button" aria-label="Play reel">
+    <span class="btn-fill" aria-hidden="true"></span>
+    <span class="play-label">Play Reel</span>
+    <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M8 5v14l11-7z"></path>
+    </svg>
+  </button>
 </section>
 
 <style>
@@ -26,112 +24,102 @@
     font-family: var(--font-display);
     font-weight: 800;
     text-transform: uppercase;
-    line-height: 0.8;
+    line-height: 1;
     letter-spacing: -0.02em;
     color: var(--color-text);
     margin: 0;
-  }
-
-  .hero-title .word {
-    display: block;
+    font-size: 6.3vw;
     white-space: nowrap;
-  }
-
-  .hero-title .word-primary {
-    font-size: 7.2vw;
-    margin-left: 5vw;
-  }
-
-  .hero-title .word-secondary {
-    font-size: 8.1vw;
-    margin-left: 12vw;
-    margin-top: -0.5vw;
   }
 
   .tagline {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.675rem;
     color: var(--color-accent);
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    max-width: 22rem;
+    letter-spacing: 0.1em;
     line-height: 1.6;
-    margin: 0;
-  }
-
-  .cta {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-text);
-    text-decoration: none;
-    border: 1px solid var(--color-muted);
-    padding: 1rem 2rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    margin: 0.75rem 0 0;
     white-space: nowrap;
-    transition:
-      color 0.3s ease,
-      border-color 0.3s ease,
-      background-color 0.3s ease;
   }
 
-  .cta:hover {
-    color: var(--color-bg);
-    background-color: var(--color-accent);
+  .play-btn {
+    display: none;
+    position: relative;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid rgba(244, 244, 245, 0.3);
+    padding: 1rem 2.25rem;
+    overflow: hidden;
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    isolation: isolate;
+  }
+
+  .play-btn:hover {
     border-color: var(--color-accent);
   }
 
+  .btn-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: var(--color-accent);
+    z-index: -1;
+    transition: width 0.3s ease;
+  }
+
+  .play-btn:hover .btn-fill {
+    width: 100%;
+  }
+
+  .play-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+  }
+
+  .play-icon {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+  }
+
   @media (max-width: 1024px) {
-    .tagline {
-      font-size: 0.6rem;
-      letter-spacing: 0.15em;
-      max-width: 16rem;
+    .hero-title {
+      font-size: 6.75vw;
     }
 
-    .cta {
-      padding: 0.75rem 1.25rem;
-      font-size: 0.6rem;
-      letter-spacing: 0.15em;
+    .tagline {
+      font-size: 0.585rem;
+      letter-spacing: 0.1em;
     }
   }
 
   @media (max-width: 1024px) and (orientation: landscape) {
-    .hero-title .word-primary {
-      font-size: 7.25vw;
-      margin-left: 4vw;
+    .hero-content {
+      display: none;
     }
 
-    .hero-title .word-secondary {
-      font-size: 7.95vw;
-      margin-left: 9vw;
-      margin-top: -0.5vw;
+    .play-btn {
+      display: inline-flex;
     }
   }
 
   @media (max-width: 768px) and (orientation: portrait) {
-    .hero-title .word-primary {
-      font-size: 7.3vw;
-      margin-left: 4vw;
-    }
-
-    .hero-title .word-secondary {
-      font-size: 7.9vw;
-      margin-left: 6vw;
-      margin-top: -0.5vw;
+    .hero-title {
+      font-size: 6.16vw;
     }
 
     .tagline {
-      font-size: 0.6rem;
-      max-width: calc(100vw - 3rem);
-    }
-
-    .cta {
-      padding: 0.65rem 1rem;
-      font-size: 0.55rem;
-      align-self: center;
+      font-size: 0.54rem;
+      letter-spacing: 0.1em;
     }
   }
 </style>

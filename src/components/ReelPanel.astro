@@ -1,0 +1,254 @@
+---
+// Reel preview panel — video placeholder + animated scanline, play button, metadata strips.
+// Adapted from the Lumo cinematic-production template, stripped of the custom cursor
+// and burst-canvas layers so it sits cleanly inside the existing BaseLayout.
+---
+
+<section class="reel-panel absolute top-6 left-6 right-6 md:top-12 md:left-12 md:right-12 h-[25.6rem] md:h-[35rem] overflow-hidden border border-white/10 group">
+  <div class="video-placeholder absolute inset-0 opacity-[0.35] transition-transform duration-700 group-hover:scale-105" aria-hidden="true"></div>
+
+  <div class="absolute inset-0 flex items-center justify-center z-20">
+    <button class="play-btn" type="button" aria-label="Play reel">
+      <span class="btn-fill" aria-hidden="true"></span>
+      <span class="play-label">Play Reel</span>
+      <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 5v14l11-7z"></path>
+      </svg>
+    </button>
+    <div class="hero-overlay">
+      <h1 class="overlay-title">Don De Castro</h1>
+      <p class="overlay-tagline">
+        Technical Animator &amp; Motion Edit Supervisor.<br />
+        Feature film, AAA games, virtual production.
+      </p>
+    </div>
+  </div>
+
+  <div class="meta-bottom">
+    <span>Res: 4K 23.98fps</span>
+    <span>Codec: RAW.001</span>
+    <span class="rec">Rec ●</span>
+  </div>
+  <div class="meta-bottom-right">Duration / 01:42</div>
+</section>
+
+<style>
+  .reel-panel {
+    background: linear-gradient(180deg, rgba(7, 7, 9, 0) 0%, rgba(7, 7, 9, 1) 100%);
+  }
+
+  .video-placeholder {
+    background: url("https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1280")
+      center / cover;
+    filter: grayscale(1) contrast(1.2) brightness(0.6);
+  }
+
+  .play-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5rem;
+    border: 1px solid rgba(244, 244, 245, 0.3);
+    padding: 1.25rem 3rem;
+    overflow: hidden;
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    isolation: isolate;
+  }
+
+  .play-btn:hover {
+    border-color: var(--color-accent);
+  }
+
+  .btn-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: var(--color-accent);
+    z-index: -1;
+    transition: width 0.3s ease;
+  }
+
+  .play-btn:hover .btn-fill {
+    width: 100%;
+  }
+
+  .play-label {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+  }
+
+  .play-icon {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+  }
+
+  .meta-bottom {
+    position: absolute;
+    bottom: 1rem;
+    left: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    color: rgba(82, 82, 91, 0.8);
+    z-index: 20;
+  }
+
+  .rec {
+    animation: pulse-rec 1.6s ease-in-out infinite;
+  }
+
+  @keyframes pulse-rec {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  .meta-bottom-right {
+    position: absolute;
+    bottom: 1rem;
+    right: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    color: rgba(82, 82, 91, 0.8);
+    z-index: 20;
+  }
+
+  .hero-overlay {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .overlay-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    margin: 0;
+    font-size: 6.09vw;
+    white-space: nowrap;
+  }
+
+  .overlay-tagline {
+    font-family: var(--font-mono);
+    font-size: 0.585rem;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+    margin: 0.75rem 0 0;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1024px) {
+    .play-btn {
+      padding: 1rem 2.25rem;
+      gap: 1rem;
+    }
+
+    .play-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+    }
+  }
+
+  @media (max-width: 1024px) and (orientation: landscape) {
+    .reel-panel {
+      height: auto;
+      bottom: 1.5rem;
+    }
+
+    .play-btn {
+      display: none;
+    }
+
+    .hero-overlay {
+      display: flex;
+      position: absolute;
+      bottom: 10%;
+      left: 0;
+      right: 0;
+    }
+
+    .meta-bottom,
+    .meta-bottom-right {
+      bottom: 0.5rem;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .reel-panel {
+      bottom: 3rem;
+    }
+
+    .meta-bottom,
+    .meta-bottom-right {
+      bottom: 0.75rem;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .reel-panel {
+      height: auto;
+      bottom: calc(23.91rem + 6.3vw);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .reel-panel {
+      height: auto;
+      bottom: 14rem;
+    }
+
+    .overlay-tagline {
+      font-size: 0.54rem;
+    }
+
+    .play-btn {
+      padding: 0.75rem 1.5rem;
+      gap: 0.75rem;
+    }
+
+    .play-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+    }
+
+    .play-icon {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+
+    .meta-bottom {
+      gap: 0.75rem;
+      left: 1rem;
+      bottom: 0.75rem;
+      font-size: 9px;
+    }
+
+    .meta-bottom-right {
+      bottom: 0.75rem;
+      right: 1rem;
+      font-size: 9px;
+    }
+  }
+</style>
