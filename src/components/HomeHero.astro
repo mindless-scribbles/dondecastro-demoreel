@@ -10,14 +10,45 @@
       Feature film, AAA games, virtual production.
     </p>
   </div>
-  <button class="play-btn" type="button" aria-label="Play reel">
-    <span class="btn-fill" aria-hidden="true"></span>
-    <span class="play-label">Play Reel</span>
-    <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M8 5v14l11-7z"></path>
-    </svg>
-  </button>
+  <div class="play-actions">
+    <button class="play-btn" type="button" aria-label="Play reel">
+      <span class="play-label">Play Reel</span>
+      <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 5v14l11-7z"></path>
+      </svg>
+    </button>
+    <div class="sub-actions">
+      <a class="sub-btn" href="https://youtu.be/_6fQY8wwXQs" target="_blank" rel="noopener noreferrer">
+        <span class="btn-fill" aria-hidden="true"></span>
+        <span class="sub-label">Tech Anim</span>
+      </a>
+      <a class="sub-btn" href="https://youtu.be/4ca-ywgyVdE" target="_blank" rel="noopener noreferrer">
+        <span class="btn-fill" aria-hidden="true"></span>
+        <span class="sub-label">Mocap / Anim</span>
+      </a>
+    </div>
+  </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLElement>(".play-actions").forEach((wrapper) => {
+    const playBtn = wrapper.querySelector<HTMLButtonElement>(".play-btn");
+    if (!playBtn) return;
+
+    playBtn.addEventListener("click", (e) => {
+      if (window.matchMedia("(hover: none)").matches) {
+        e.preventDefault();
+        wrapper.classList.toggle("open");
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!wrapper.contains(e.target as Node)) {
+        wrapper.classList.remove("open");
+      }
+    });
+  });
+</script>
 
 <style>
   .hero-title {
@@ -43,9 +74,16 @@
     white-space: nowrap;
   }
 
-  .play-btn {
+  .play-actions {
     display: none;
     position: relative;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .play-btn {
+    position: relative;
+    display: inline-flex;
     align-items: center;
     gap: 1rem;
     border: 1px solid rgba(244, 244, 245, 0.3);
@@ -62,6 +100,55 @@
     border-color: var(--color-accent);
   }
 
+  .sub-actions {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding-top: 0.75rem;
+    display: flex;
+    gap: 0.75rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+  }
+
+  .play-actions.open .sub-actions,
+  .play-actions:hover .sub-actions {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .sub-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(244, 244, 245, 0.3);
+    padding: 0.6rem 1.25rem;
+    overflow: hidden;
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    isolation: isolate;
+    white-space: nowrap;
+  }
+
+  .sub-btn:hover {
+    border-color: var(--color-accent);
+  }
+
+  .sub-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
   .btn-fill {
     position: absolute;
     left: 0;
@@ -73,7 +160,7 @@
     transition: width 0.3s ease;
   }
 
-  .play-btn:hover .btn-fill {
+  .sub-btn:hover .btn-fill {
     width: 100%;
   }
 
@@ -107,8 +194,23 @@
       display: none;
     }
 
-    .play-btn {
+    .play-actions {
       display: inline-flex;
+      transform: translateY(-2.5rem);
+    }
+  }
+
+  @media (hover: none) {
+    .play-actions:hover .sub-actions {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .play-actions.open .sub-actions {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
   }
 
