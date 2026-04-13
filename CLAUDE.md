@@ -166,3 +166,40 @@ npm run preview      # Preview production build locally
 - Search functionality if blog grows
 - Comments (giscus or similar GitHub-based system)
 - Dark/light theme toggle (start dark-only, add toggle later)
+
+## Session Continuity
+
+At the start of every session, read STATUS.md before doing anything else. Orient yourself before writing any code.
+
+At the end of every session (when I say "wrap up", "park this", "let's stop", "goodnight", or similar), update STATUS.md with:
+
+- What we worked on this session
+- Which files were created or modified
+- Key decisions made
+- Clear next steps (specific, not vague)
+
+## Learning Loop
+
+Read LESSONS.md at session start alongside STATUS.md.
+
+After any correction or mistake:
+
+1. Fix the immediate problem
+2. Add a lesson to LESSONS.md that prevents the same mistake
+3. Keep lessons concrete and short
+
+## Planning
+
+Enter Plan Mode for any task that touches more than 2 files. Do not start coding until I approve the plan. If something goes sideways mid-implementation, stop and re-plan instead of patching.
+
+## Verification
+
+Never mark a task complete without verifying the change works:
+
+- At minimum, run `npm run build` and confirm no errors.
+- For UI changes, start the dev server (`npm run dev`) and spot-check the affected pages before reporting done. Type-check/build success is not feature success.
+- No test suite exists yet. When we add one, update this section to require passing tests before completion, and write tests for any new behavior.
+
+## Context Management
+
+Use subagents for any investigation that requires reading more than 5 files. Keep the main context clean. Run `/compact` proactively when context usage exceeds 50%.
