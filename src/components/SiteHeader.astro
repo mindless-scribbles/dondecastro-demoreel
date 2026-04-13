@@ -1,0 +1,154 @@
+---
+const navItems = [
+  { label: "Expertise", href: "/expertise" },
+  { label: "Journal", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+];
+---
+
+<header class="flex justify-between items-start w-full">
+  <a href="/" class="brand" aria-label="MS — Creative Agency, home">
+    <span class="brand-letters">
+      <span class="brand-m">M</span>
+      <span class="brand-s">S</span>
+    </span>
+    <span class="brand-sub">Creative Agency</span>
+  </a>
+
+  <nav class="nav">
+    {
+      navItems.map((item) => (
+        <a href={item.href} class="nav-link">
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+</header>
+
+<style>
+  .brand {
+    color: var(--color-text);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+  }
+
+  .brand-letters {
+    display: flex;
+    align-items: baseline;
+    line-height: 1;
+  }
+
+  .brand-m {
+    font-family: var(--font-serif);
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    color: var(--color-text);
+  }
+
+  .brand-s {
+    font-family: var(--font-serif);
+    font-size: 2.4rem;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -0.02em;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--color-text);
+  }
+
+  .brand-sub {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--color-accent);
+    margin-top: -2px;
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: right;
+  }
+
+  .nav-link {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0%;
+    height: 1px;
+    background-color: var(--color-accent);
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-link:hover {
+    color: var(--color-accent);
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+    left: 0;
+    right: auto;
+  }
+
+  @media (max-width: 1024px) {
+    .brand-m {
+      font-size: 1.8rem;
+    }
+
+    .brand-s {
+      font-size: 2rem;
+    }
+
+    .brand-sub {
+      font-size: 0.6rem;
+    }
+
+    .nav-link {
+      font-size: 0.65rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .nav {
+      flex-direction: row;
+      gap: 16px;
+    }
+
+    .nav-link {
+      font-size: 0.6rem;
+    }
+  }
+
+  @media (max-width: 768px) and (orientation: portrait) {
+    .brand-m {
+      font-size: 1.5rem;
+    }
+
+    .brand-s {
+      font-size: 1.7rem;
+    }
+
+    .brand-sub {
+      font-size: 0.55rem;
+      margin-top: -1px;
+    }
+  }
+</style>

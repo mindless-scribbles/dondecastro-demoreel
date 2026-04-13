@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import HomeHero from "../components/HomeHero.astro";
+---
+
+<BaseLayout>
+  <main class="min-h-screen flex flex-col justify-between p-6 md:p-12 relative z-10">
+    <SiteHeader />
+    <HomeHero />
+  </main>
+</BaseLayout>
