@@ -1,0 +1,319 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { journalEntries } from "../data/journalEntries";
+
+const navItems = [
+  { label: "Home", href: "/" },
+  { label: "Expertise", href: "/expertise" },
+  { label: "Contact", href: "/contact" },
+];
+---
+
+<BaseLayout
+  title="Journal — Don De Castro"
+  description="Notes and experiments on rigging, motion pipelines, and technical art."
+>
+  <div class="journal-root relative z-10">
+    <SiteHeader navItems={navItems} sticky>
+      <span slot="middle" class="journal-label">Journal</span>
+    </SiteHeader>
+
+    <div class="sub-bar">
+      <span>JOURNAL / ENTRIES 001–012</span>
+      <span>HOVER FOR COLOR</span>
+    </div>
+
+    <main class="grid-system">
+      {
+        journalEntries.map((e) => {
+          const cellBody = (
+            <>
+              <div class="image-volume">
+                <div class="thumb-frame" style={`--src: url('${e.image}');`}>
+                  <div class="thumb-base" />
+                </div>
+              </div>
+              <div class="meta-footer">
+                <div class="meta-primary">
+                  <span class="project-title">{e.title}</span>
+                  <span class="project-id">{e.id}</span>
+                </div>
+                <div class="meta-tags">
+                  {e.tags.map((t) => (
+                    <span class="tag">{t}</span>
+                  ))}
+                </div>
+              </div>
+              <span class="decor-dot" aria-hidden="true" />
+            </>
+          );
+
+          return e.hasPage ? (
+            <a class={`cell cell-link ${e.cellClass}`} href={`/journal/${e.slug}`}>
+              {cellBody}
+            </a>
+          ) : (
+            <article class={`cell ${e.cellClass}`}>{cellBody}</article>
+          );
+        })
+      }
+    </main>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* The site-wide fixed frame overlaps a long scrolling archive — hide on this page. */
+  body:has(.journal-root) .frame {
+    display: none;
+  }
+</style>
+
+<style>
+  .journal-root {
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .journal-label {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+    color: var(--color-text);
+  }
+
+  .sub-bar {
+    position: sticky;
+    top: 3.5rem;
+    z-index: 19;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    background-color: var(--color-bg);
+    border-bottom: 1px solid rgba(244, 244, 245, 0.1);
+  }
+
+  @media (min-width: 768px) {
+    .sub-bar {
+      top: 4rem;
+    }
+  }
+
+  .grid-system {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background-color: rgba(244, 244, 245, 0.08);
+    border-top: 1px solid rgba(244, 244, 245, 0.08);
+    border-bottom: 1px solid rgba(244, 244, 245, 0.08);
+  }
+
+  .cell {
+    background-color: var(--color-bg);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    min-height: 400px;
+    transition: background-color 0.3s ease;
+  }
+
+  .cell-link {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .cell-1 { grid-column: span 1; }
+  .cell-2 { grid-column: span 2; }
+  .cell-3 { grid-column: span 1; }
+  .cell-4 { grid-column: span 1; grid-row: span 2; }
+  .cell-5 { grid-column: span 1; }
+  .cell-6 { grid-column: span 2; grid-row: span 2; }
+  .cell-7 { grid-column: span 1; }
+  .cell-8 { grid-column: span 2; }
+  .cell-9 { grid-column: span 1; }
+  .cell-10 { grid-column: span 1; }
+  .cell-11 { grid-column: span 3; }
+  .cell-12 { grid-column: span 1; }
+
+  .image-volume {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 2rem;
+    width: 100%;
+    height: 100%;
+  }
+
+  .thumb-frame {
+    position: relative;
+    width: 75%;
+    aspect-ratio: 1 / 1;
+    background-color: #111;
+    overflow: hidden;
+  }
+
+  .cell-2 .thumb-frame,
+  .cell-8 .thumb-frame,
+  .cell-11 .thumb-frame {
+    aspect-ratio: 16 / 9;
+    width: 85%;
+  }
+
+  .cell-4 .thumb-frame {
+    aspect-ratio: 3 / 4;
+    width: 80%;
+  }
+
+  .cell-6 .thumb-frame {
+    aspect-ratio: 4 / 3;
+    width: 90%;
+  }
+
+  .thumb-base {
+    position: absolute;
+    inset: 0;
+    background-image: var(--src);
+    background-size: cover;
+    background-position: center;
+    filter: grayscale(100%) contrast(1.15);
+    transition: filter 0.4s ease;
+  }
+
+  .cell:hover .thumb-base {
+    filter: grayscale(0%) contrast(1.05);
+  }
+
+  .meta-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .meta-primary {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid rgba(244, 244, 245, 0.1);
+    padding-bottom: 0.5rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .cell:hover .meta-primary {
+    border-color: var(--color-accent);
+  }
+
+  .project-title {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text);
+  }
+
+  .project-id {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    transition: color 0.3s ease;
+  }
+
+  .cell:hover .project-id {
+    color: var(--color-accent);
+  }
+
+  .meta-tags {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+    border: 1px solid rgba(244, 244, 245, 0.1);
+    padding: 0.15rem 0.35rem;
+    text-transform: uppercase;
+    transition: border-color 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+  }
+
+  .cell:hover .tag {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+    background-color: rgba(255, 51, 0, 0.06);
+  }
+
+  .decor-dot {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 4px;
+    height: 4px;
+    background-color: var(--color-text);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .cell:hover .decor-dot {
+    background-color: var(--color-accent);
+    transform: scale(1.5);
+  }
+
+  @media (max-width: 1200px) {
+    .grid-system {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .cell-11 {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .grid-system {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    [class*="cell-"] {
+      grid-column: span 1 !important;
+      grid-row: span 1 !important;
+    }
+
+    .cell {
+      min-height: 340px;
+      padding: 1.25rem;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .grid-system {
+      grid-template-columns: 1fr;
+    }
+
+    .sub-bar {
+      font-size: 0.55rem;
+      padding: 0.5rem 1rem;
+    }
+
+    .journal-label {
+      font-size: 1.125rem;
+    }
+  }
+</style>

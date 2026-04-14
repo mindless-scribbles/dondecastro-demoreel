@@ -1,19 +1,26 @@
 ---
 interface Props {
   navItems?: { label: string; href: string }[];
+  sticky?: boolean;
 }
 
 const defaultNav = [
   { label: "Expertise", href: "/expertise" },
-  { label: "Journal", href: "/blog" },
+  { label: "Journal", href: "/journal" },
   { label: "Contact", href: "/contact" },
 ];
 
-const { navItems = defaultNav } = Astro.props;
+const { navItems = defaultNav, sticky = false } = Astro.props;
+const hasMiddle = Astro.slots.has("middle");
 ---
 
-<header class="flex justify-between items-start w-full relative z-30 px-3 py-2 md:px-4 md:py-3">
-  <a href="/" class="brand" aria-label="MS — Creative Agency, home">
+<header
+  class:list={[
+    "grid grid-cols-[1fr_auto_1fr] items-start w-full relative z-30 px-3 py-2 md:px-4 md:py-3",
+    { sticky: sticky },
+  ]}
+>
+  <a href="/" class="brand col-start-1 justify-self-start" aria-label="MS — Creative Agency, home">
     <span class="brand-letters">
       <span class="brand-m">M</span>
       <span class="brand-s">S</span>
@@ -21,7 +28,15 @@ const { navItems = defaultNav } = Astro.props;
     <span class="brand-sub">Creative Agency</span>
   </a>
 
-  <nav class="nav">
+  {
+    hasMiddle && (
+      <div class="middle col-start-2 justify-self-center">
+        <slot name="middle" />
+      </div>
+    )
+  }
+
+  <nav class="nav col-start-3 justify-self-end">
     {
       navItems.map((item) => (
         <a href={item.href} class="nav-link">
@@ -35,6 +50,18 @@ const { navItems = defaultNav } = Astro.props;
 <style>
   header {
     padding-top: 0.75rem;
+  }
+
+  header.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background-color: var(--color-bg);
+    border-bottom: 1px solid rgba(244, 244, 245, 0.1);
+  }
+
+  .middle {
+    align-self: center;
   }
 
   @media (min-width: 768px) {

@@ -1,0 +1,244 @@
+---
+import JournalEntryLayout from "../../layouts/JournalEntryLayout.astro";
+import { journalEntries, type JournalEntry } from "../../data/journalEntries";
+
+export async function getStaticPaths() {
+  return journalEntries
+    .filter((e) => e.hasPage)
+    .map((e) => ({ params: { slug: e.slug }, props: { entry: e } }));
+}
+
+interface Props {
+  entry: JournalEntry;
+}
+
+const { entry } = Astro.props;
+
+const built = journalEntries.filter((e) => e.hasPage);
+const currentIdx = built.findIndex((e) => e.slug === entry.slug);
+const nextEntry = built[(currentIdx + 1) % built.length];
+const nextNumber = nextEntry.id.replace(/\[|\]/g, "");
+---
+
+<JournalEntryLayout
+  title={`${entry.title} — Field Logs`}
+  description={entry.subtitle ?? entry.title}
+  currentSlug={entry.slug}
+>
+  <header class="hero">
+    <img
+      src={entry.heroImage ?? entry.image}
+      alt={entry.title}
+      class="hero-image"
+    />
+    <div class="hero-overlay">
+      <h1 class="headline">
+        {entry.title}{entry.subtitle && <>: <em>{entry.subtitle}</em></>}
+      </h1>
+    </div>
+  </header>
+
+  <article class="article-container">
+    <div class="article-meta">
+      <span>Year: <b>{entry.year}</b></span>
+      <span>Format: <b>{entry.format}</b></span>
+      <span>Category: <b>{entry.category}</b></span>
+      <span>Ref: <b>{entry.id}</b></span>
+    </div>
+
+    <section class="content-body">
+      {
+        entry.article?.map((block) => {
+          if (block.type === "p") {
+            if (block.dropcap) {
+              const firstChar = block.html.charAt(0);
+              const rest = block.html.slice(1);
+              return (
+                <p>
+                  <span class="dropcap">{firstChar}</span>
+                  <Fragment set:html={rest} />
+                </p>
+              );
+            }
+            return (
+              <p>
+                <Fragment set:html={block.html} />
+              </p>
+            );
+          }
+          if (block.type === "quote") {
+            return <div class="quote-block">{block.text}</div>;
+          }
+          return (
+            <>
+              <img src={block.src} alt={block.alt} class="sub-image" />
+              <div class="caption">{block.caption}</div>
+            </>
+          );
+        })
+      }
+    </section>
+  </article>
+
+  <footer class="entry-footer">
+    <div>© 2026 DON DE CASTRO — FIELD LOGS</div>
+    <a class="proceed" href={`/journal/${nextEntry.slug}`}>
+      PROCEED TO PROJECT [{nextNumber}] →
+    </a>
+  </footer>
+</JournalEntryLayout>
+
+<style>
+  .hero {
+    width: 100%;
+    height: 70vh;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 4rem;
+    border-bottom: 1px solid rgba(244, 244, 245, 0.08);
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(100%) contrast(1.1);
+    opacity: 0.7;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 4rem 2rem;
+    background: linear-gradient(to top, var(--color-bg), transparent);
+  }
+
+  .headline {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 0.95;
+    font-weight: 900;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    color: var(--color-text);
+  }
+
+  .headline em {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .article-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .article-meta {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    border-top: 1px solid rgba(244, 244, 245, 0.08);
+    border-bottom: 1px solid rgba(244, 244, 245, 0.08);
+    padding: 1rem 0;
+    justify-content: center;
+  }
+
+  .article-meta b {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .quote-block {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.3;
+    border-left: 2px solid var(--color-accent);
+    padding-left: 2rem;
+    margin: 4rem 0;
+    color: var(--color-text);
+  }
+
+  .sub-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    filter: grayscale(100%);
+    border: 1px solid rgba(244, 244, 245, 0.08);
+    display: block;
+  }
+
+  .caption {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+    margin-top: 0.75rem;
+    margin-bottom: 3rem;
+    text-transform: uppercase;
+  }
+
+  .entry-footer {
+    padding: 6rem 2rem 4rem;
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+    border-top: 1px solid rgba(244, 244, 245, 0.08);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+  }
+
+  .proceed {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    letter-spacing: 0.2em;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  .proceed:hover {
+    border-bottom-color: var(--color-accent);
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      height: 55vh;
+    }
+
+    .hero-overlay {
+      padding: 2rem 1.5rem;
+    }
+
+    .article-container {
+      padding: 0 1.5rem;
+    }
+
+    .article-meta {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    .quote-block {
+      font-size: 1.35rem;
+      padding-left: 1.25rem;
+      margin: 3rem 0;
+    }
+  }
+</style>

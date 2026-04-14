@@ -1,0 +1,91 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import FieldLogsSidebar from "../components/FieldLogsSidebar.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  currentSlug: string;
+}
+
+const { title, description, currentSlug } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="journal-entry-root relative z-10">
+    <SiteHeader sticky />
+
+    <div class="entry-shell">
+      <FieldLogsSidebar currentSlug={currentSlug} />
+
+      <main class="entry-main">
+        <slot />
+      </main>
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  body:has(.journal-entry-root) .frame {
+    display: none;
+  }
+
+  .journal-entry-root .entry-main .article-container p {
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.7;
+    color: #cccccc;
+    text-align: justify;
+  }
+
+  .journal-entry-root .dropcap {
+    font-family: var(--font-serif);
+    float: left;
+    font-size: 5rem;
+    line-height: 1;
+    margin-right: 1rem;
+    margin-top: 0.1rem;
+    color: var(--color-accent);
+  }
+
+  .journal-entry-root .inline-metadata {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-accent);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    border: 1px solid var(--color-accent);
+    padding: 0.05rem 0.4rem;
+    margin: 0 0.15rem;
+    vertical-align: middle;
+    transform: translateY(-1px);
+    font-family: var(--font-mono);
+  }
+</style>
+
+<style>
+  .journal-entry-root {
+    min-height: 100vh;
+  }
+
+  .entry-shell {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: calc(100vh - 3.5rem);
+    align-items: start;
+  }
+
+  .entry-main {
+    min-width: 0;
+  }
+
+  @media (max-width: 1023px) {
+    .entry-shell {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

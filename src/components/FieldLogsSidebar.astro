@@ -1,0 +1,174 @@
+---
+import { journalEntries } from "../data/journalEntries";
+
+interface Props {
+  currentSlug: string;
+}
+
+const { currentSlug } = Astro.props;
+
+const numberFor = (id: string) => id.replace(/\[|\]/g, "");
+---
+
+<aside class="field-logs">
+  <div class="top">
+    <div class="brand">FIELD LOGS</div>
+    <ol class="index-list">
+      {
+        journalEntries.map((e) => {
+          const num = numberFor(e.id);
+          const isCurrent = e.slug === currentSlug;
+          const isLinked = e.hasPage && !isCurrent;
+
+          if (isCurrent) {
+            return (
+              <li class="index-item current" aria-current="page">
+                <span class="num">{num}</span>
+                <span class="title">{e.title}</span>
+              </li>
+            );
+          }
+
+          if (isLinked) {
+            return (
+              <li class="index-item">
+                <a class="index-link" href={`/journal/${e.slug}`}>
+                  <span class="num">{num}</span>
+                  <span class="title">{e.title}</span>
+                </a>
+              </li>
+            );
+          }
+
+          return (
+            <li class="index-item soon" aria-disabled="true">
+              <span class="num">{num}</span>
+              <span class="title">{e.title}</span>
+              <span class="soon-tag">soon</span>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+  <div class="status-footer">SYS.ARCHIVE_VER_2.4 / 2026</div>
+</aside>
+
+<style>
+  .field-logs {
+    border-right: 1px solid rgba(244, 244, 245, 0.08);
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    min-height: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .field-logs {
+      position: sticky;
+      top: 3.5rem;
+      height: calc(100vh - 3.5rem);
+    }
+  }
+
+  .brand {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--color-text);
+    margin-bottom: 2rem;
+  }
+
+  .index-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .index-item {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    align-items: baseline;
+    gap: 0.75rem;
+    color: var(--color-muted);
+    transition: color 0.2s ease;
+  }
+
+  .index-item .num {
+    color: rgba(82, 82, 91, 0.75);
+  }
+
+  .index-link {
+    display: contents;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .index-item:not(.current):not(.soon):hover {
+    color: var(--color-text);
+  }
+
+  .index-item:not(.current):not(.soon):hover .num {
+    color: var(--color-accent);
+  }
+
+  .index-item.current {
+    color: var(--color-accent);
+    cursor: default;
+  }
+
+  .index-item.current .num {
+    color: var(--color-accent);
+  }
+
+  .index-item.soon {
+    color: rgba(82, 82, 91, 0.45);
+    cursor: default;
+  }
+
+  .index-item.soon .num {
+    color: rgba(82, 82, 91, 0.45);
+  }
+
+  .soon-tag {
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(82, 82, 91, 0.5);
+    padding: 0.05rem 0.3rem;
+    border: 1px solid rgba(82, 82, 91, 0.3);
+  }
+
+  .status-footer {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 1023px) {
+    .field-logs {
+      border-right: none;
+      border-bottom: 1px solid rgba(244, 244, 245, 0.08);
+      padding: 1.5rem 1.5rem 2rem;
+    }
+
+    .brand {
+      margin-bottom: 1rem;
+    }
+
+    .index-list {
+      gap: 0.4rem;
+    }
+  }
+</style>
