@@ -47,6 +47,41 @@
         wrapper.classList.remove("open");
       }
     });
+
+    const subActions = wrapper.querySelector<HTMLElement>(".sub-actions");
+    const subBtns = Array.from(wrapper.querySelectorAll<HTMLElement>(".sub-btn"));
+    let active: HTMLElement | null = null;
+
+    const setFill = (btn: HTMLElement, origin: "left" | "right", scale: 0 | 1) => {
+      btn.style.setProperty("--fill-origin", origin);
+      btn.style.setProperty("--fill-scale", String(scale));
+    };
+
+    subBtns.forEach((btn) => {
+      btn.addEventListener("pointerenter", () => {
+        if (active && active !== btn) {
+          const movingRight =
+            btn.getBoundingClientRect().left > active.getBoundingClientRect().left;
+          if (movingRight) {
+            setFill(active, "right", 0);
+            setFill(btn, "left", 1);
+          } else {
+            setFill(active, "left", 0);
+            setFill(btn, "right", 1);
+          }
+        } else if (!active) {
+          setFill(btn, "left", 1);
+        }
+        active = btn;
+      });
+    });
+
+    subActions?.addEventListener("pointerleave", () => {
+      if (active) {
+        setFill(active, "left", 0);
+        active = null;
+      }
+    });
   });
 </script>
 
@@ -151,17 +186,12 @@
 
   .btn-fill {
     position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 0;
+    inset: 0;
     background: var(--color-accent);
     z-index: -1;
-    transition: width 0.3s ease;
-  }
-
-  .sub-btn:hover .btn-fill {
-    width: 100%;
+    transform: scaleX(var(--fill-scale, 0));
+    transform-origin: var(--fill-origin, left);
+    transition: transform 0.3s ease;
   }
 
   .play-label {

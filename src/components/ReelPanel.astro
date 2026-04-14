@@ -160,17 +160,12 @@
 
   .btn-fill {
     position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 0;
+    inset: 0;
     background: var(--color-accent);
     z-index: -1;
-    transition: width 0.3s ease;
-  }
-
-  .sub-btn:hover .btn-fill {
-    width: 100%;
+    transform: scaleX(var(--fill-scale, 0));
+    transform-origin: var(--fill-origin, left);
+    transition: transform 0.3s ease;
   }
 
   .play-label {
