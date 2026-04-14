@@ -49,12 +49,15 @@ const navItems = [
             </>
           );
 
+          const classes = ["cell", e.cellClass, e.video && "cell-video"]
+            .filter(Boolean)
+            .join(" ");
           return e.hasPage ? (
-            <a class={`cell cell-link ${e.cellClass}`} href={`/journal/${e.slug}`}>
+            <a class={`${classes} cell-link`} href={`/journal/${e.slug}`}>
               {cellBody}
             </a>
           ) : (
-            <article class={`cell ${e.cellClass}`}>{cellBody}</article>
+            <article class={classes}>{cellBody}</article>
           );
         })
       }
@@ -168,6 +171,17 @@ const navItems = [
   .cell-2 .thumb-frame,
   .cell-8 .thumb-frame,
   .cell-11 .thumb-frame {
+    aspect-ratio: 16 / 9;
+    width: 85%;
+  }
+
+  /* Video entries: unified 2-col widescreen look regardless of cellClass. */
+  .cell-video {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .cell-video .thumb-frame {
     aspect-ratio: 16 / 9;
     width: 85%;
   }
