@@ -16,7 +16,19 @@ export interface ArticleImage {
   caption: string;
 }
 
-export type ArticleBlock = ArticleParagraph | ArticleQuote | ArticleImage;
+export interface ArticleVideo {
+  type: "video";
+  provider: "youtube";
+  videoId: string;
+  title?: string;
+  caption?: string;
+}
+
+export type ArticleBlock =
+  | ArticleParagraph
+  | ArticleQuote
+  | ArticleImage
+  | ArticleVideo;
 
 export interface JournalEntry {
   slug: string;
@@ -32,133 +44,138 @@ export interface JournalEntry {
   heroImage?: string;
   subtitle?: string;
   article?: ArticleBlock[];
+  video?: boolean;
 }
 
 export const journalEntries: JournalEntry[] = [
   {
-    slug: "synthetic-horizon",
-    title: "Synthetic Horizon",
+    slug: "mocap-avatar-way-of-water",
+    title: "Motion Capture Workflows: Avatar way of water",
     id: "[001]",
-    tags: ["2024", "WEBGL", "INTERNAL"],
-    image:
-      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1200&auto=format&fit=crop",
+    tags: ["2024", "MOCAP", "FILM"],
+    image: "https://i.ytimg.com/vi/4ca-ywgyVdE/sddefault.jpg",
     cellClass: "cell-1",
     hasPage: true,
+    video: true,
     year: 2024,
-    format: "WEBGL",
-    category: "INTERNAL",
-    heroImage:
-      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1600&auto=format&fit=crop",
-    subtitle: "Procedural Landscapes at the Edge of Computation",
+    format: "VIDEO",
+    category: "FILM",
+    heroImage: "https://i.ytimg.com/vi/4ca-ywgyVdE/sddefault.jpg",
+    subtitle: "Notes from the mocap pipeline",
     article: [
+      {
+        type: "video",
+        provider: "youtube",
+        videoId: "4ca-ywgyVdE",
+        title: "Motion Capture Workflows: Avatar way of water",
+        caption: "Watch on YouTube",
+      },
       {
         type: "p",
         dropcap: true,
-        html: 'Synthetic Horizon began as a thought experiment: can a horizon line — that most organic of natural boundaries — be generated entirely from noise, without any reference to the real world? The resulting project, archived under <span class="inline-metadata">SYS.ARCHIVE_VER_2.4</span>, is less a piece of software than an ongoing argument between mathematics and perception.',
+        html: `Way of Water put the entire motion edit process underwater — literally. Scope spanned RIGGING, CHARACTER SETUP, TRACK, REFINE EDIT, RETARGET, MOTION CLEANUP, and animation, plus mentoring and training the team on best practices with the Lightstorm mocap toolset, working closely with other teams to troubleshoot any motion-related issues, and partnering with production to hit delivery goals through every phase. Also drove R&D for editing workflows on the Motion Edit team (import/export of scenes) and developed the pipeline for delivery and ingestion of motion between internal teams and vendors.`,
       },
       {
         type: "p",
-        html: 'Built in <span class="inline-metadata">WEBGL</span>, the terrain is a layered simplex-noise field sampled at runtime. Each frame negotiates between the aesthetic weight of atmospheric perspective and the hard geometry underneath. The system has no textures, no photography, no captured data — only a handful of constants that, when tuned, produce vistas indistinguishable from long-exposure photographs of desert ranges.',
-      },
-      {
-        type: "quote",
-        text: "The horizon is the moment when computation runs out of things to prove.",
-      },
-      {
-        type: "image",
-        src: "https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?q=80&w=1400&auto=format&fit=crop",
-        alt: "Procedural terrain study",
-        caption: "Fig 01.1 — Terrain Sample, 8-Octave Fractal Noise / INTERNAL",
+        html: `0:00 UNDERWATER MOCAP — By far one of the coolest parts of the experience of working on Way of Water. The challenge when working with underwater mocap was being able to see the data when splashes and bubbles dirtied up the marker data, and — when editing — being mindful to maintain all the subtleties of underwater movement.`,
       },
       {
         type: "p",
-        html: "What makes the piece useful as research, and not just as a demo, is the failure states. At certain parameter combinations the noise collapses into visibly repeating tiles; at others the horizon vanishes into pure haze. Those breakdowns are the most informative moments — the places where the simulation reveals that it was never really a landscape to begin with, only a very convincing bluff.",
+        html: `0:21 LIVE ACTION INTEGRATION — Helped with R&D on the Simulcam Spyder Cam setup. A mix of active-marker and normal capture workflows. Matchmove and contact cleanup between live action and CG characters.`,
+      },
+      {
+        type: "p",
+        html: `0:40 CHARACTER CONTACT CLEANUP — One of the biggest challenges of this film, as a motion editor, was the difference in scales between the actors/troupe and the characters they were playing. An amazing cast of troupe would play multiple characters for each scene, so we came up with a retargeting map flexible enough to reuse across pairings without building a bespoke character/actor map for each one. Spider (Jack Champion) grew probably about a foot and a half from the start of production through the end — a whole pipeline and workflow had to be created to deal with his growth spurt, so we could continue working and still update assets and motions in previously prepped files for the director to shoot cameras on stage.`,
+      },
+      {
+        type: "p",
+        html: `1:00 CREATURE CONFORM — Conforming performances to creatures that were animated post-capture. The challenge was to stay true to the intent of the performance while editing the motions as needed to make them look like they were in control and had proper riding mechanics.`,
+      },
+      {
+        type: "p",
+        html: `1:10 MOTION STITCHING / FULL-LOAD CLEANUP — Before we broke into shots, the lab built loads that gave the director a file to lens the film. Often, editorial delivered vidref for stitches, the sequence team laid out a first pass, and motion edit cleaned up the stitches into one continuous motion — giving the director the flexibility to move around and shoot the scene as it played out.`,
+      },
+      {
+        type: "p",
+        html: `1:23 ENVIRONMENT SHOOT PREP / CONTACT CLEANUP — Working closely with the prop and set builders on stage to make sure we were building props and sets at the proper scale. Providing motion files for the motion-control team converting set animation for synced performance during capture. Scale depended on who the characters were and the actors who were going to play them. In motion edit we often had to mix different scales to get the best solve motion possible as the base, then edit to the environment — which may have changed in size because the overall scale of the scene was changed after capture, and/or because environments were still actively changing throughout production.`,
+      },
+      {
+        type: "p",
+        html: `1:37 ABOVE-SURFACE IN-TANK MOCAP — SHOT TEMPLATES — Matchmove live-action Spider and edit/animate the CG characters for interaction, validating the spatial location so that it works in 3D.`,
+      },
+      {
+        type: "p",
+        html: `1:44 ABOVE-SURFACE IN-TANK MOCAP — DATA RECOVERY — A true unique challenge of Way of Water was water. Data between the water and the surface gets lost, especially when performers move through the layer of spheres we put in the water to avoid reflection. Track, cleanup, and account for any missing data. Retarget and clean up all the contacts between the characters. Make sure they are on the animated Ilu properly.`,
       },
     ],
   },
   {
-    slug: "kinetic-archive",
-    title: "Kinetic Archive",
+    slug: "gameplay-animation-and-vfx-testing",
+    title: "Gameplay Animation and VFX testing",
     id: "[002]",
-    tags: ["2023", "MOTION", "OBJEKT"],
-    image:
-      "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=1400&auto=format&fit=crop",
+    tags: ["2025", "VIDEO", "ANIM/VFX"],
+    image: "https://i.ytimg.com/vi/nNjQQSVLxb0/maxresdefault.jpg",
     cellClass: "cell-2",
     hasPage: true,
-    year: 2023,
-    format: "MOTION",
-    category: "OBJEKT",
-    heroImage:
-      "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=1600&auto=format&fit=crop",
-    subtitle: "The Mechanics of Celestial Motion",
+    video: true,
+    year: 2025,
+    format: "VIDEO",
+    category: "ANIM/VFX",
+    heroImage: "https://i.ytimg.com/vi/nNjQQSVLxb0/maxresdefault.jpg",
+    subtitle: "Unreal VFX Gameplay",
     article: [
+      {
+        type: "video",
+        provider: "youtube",
+        videoId: "nNjQQSVLxb0",
+        title: "Gameplay Animation and VFX testing",
+        caption: "Watch on YouTube",
+      },
       {
         type: "p",
         dropcap: true,
-        html: 'Kinetic Archive represents a fundamental shift in how we perceive the stasis of the past. As a part of the <span class="inline-metadata">SYS.ARCHIVE_VER_2.4</span> project, this installment focuses on the translation of lunar survey data into a fluid, temporal experience — a bridge between the cold, static remnants of space exploration and the dynamic vitality of digital interpretation.',
+        html: `Going through the UE Magic VFX class from <a href="https://www.cgcircuit.com/tutorial/ue5-magic-vfx-gameplay-blueprints-niagara-houdini" rel="noopener" target="_blank">CG Circuit</a> — a hands-on pass through gameplay blueprints, Niagara, and Houdini integration in Unreal. Character assets are from FAB, made by Lilpupinduy. Animation and character rigging done in UNREAL 5.6.`,
       },
       {
         type: "p",
-        html: 'The core of the study revolves around the relationship between light and shadow on the lunar surface. By utilizing high-fidelity telemetry from the <span class="inline-metadata">2023</span> lunar reconnaissance missions, we reconstructed a topographical narrative that breathes. This isn\'t merely a video; it\'s a procedural reconstruction of motion that was never recorded, but always existed in the geometry of the craters.',
-      },
-      {
-        type: "quote",
-        text: "We are not just viewing history; we are simulating the momentum of light across a vacuum.",
-      },
-      {
-        type: "image",
-        src: "https://images.unsplash.com/photo-1614728263952-84ea256f9679?q=80&w=1400&auto=format&fit=crop",
-        alt: "Spectral analysis of lunar shadow translation",
-        caption: "Fig 02.1 — Spectral Analysis of Shadow Translation / GLITCH_ARCHIVE",
+        html: `Created a custom CONTROL RIG with its own backward solve for the main character — the backward solve being the piece that made the rest of the workflow flexible.`,
       },
       {
         type: "p",
-        html: 'The technical execution required a custom <span class="inline-metadata">MOTION</span> engine capable of processing volumetric data in real-time. By applying <span class="inline-metadata">OBJEKT</span>-oriented shaders, we captured the shimmer of regolith under varying solar angles. The result is hauntingly precise yet artistically abstracted, intentionally blurring the line between empirical data and cinematic expression.',
+        html: `Animated the character's fireball attack entirely inside Unreal.`,
       },
       {
         type: "p",
-        html: "Throughout the development of [002], the concept of the archive evolved from a storage vessel into a living entity. Every pixel is bound by the laws of physics simulated within our internal environment, ensuring that even the most extreme abstractions remain tethered to the gravitational truth of their origin.",
+        html: `The charge animation is a stitch — animation and motion combined and cleaned so the transitions read as one take. Having a backward solve gave a lot of flexibility in moving between states: going from idle to action and blending back into idle.`,
       },
     ],
   },
   {
-    slug: "neural-lattice",
-    title: "Neural Lattice",
+    slug: "keyframe-animation-in-unreal",
+    title: "Keyframe Animation in Unreal",
     id: "[003]",
-    tags: ["2024", "AI/ML", "NEXUS"],
-    image:
-      "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop",
+    tags: ["2026", "VIDEO", "ANIM"],
+    image: "https://i.ytimg.com/vi/VS_ePmFCEw4/maxresdefault.jpg",
     cellClass: "cell-3",
     hasPage: true,
-    year: 2024,
-    format: "AI/ML",
-    category: "NEXUS",
-    heroImage:
-      "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1600&auto=format&fit=crop",
-    subtitle: "The Hidden Geometry of Machine Intelligence",
+    video: true,
+    year: 2026,
+    format: "VIDEO",
+    category: "ANIM",
+    heroImage: "https://i.ytimg.com/vi/VS_ePmFCEw4/maxresdefault.jpg",
+    subtitle: "Blocking through spline in Unreal 5.7",
     article: [
+      {
+        type: "video",
+        provider: "youtube",
+        videoId: "VS_ePmFCEw4",
+        title: "Keyframe Animation in Unreal",
+        caption: "Watch on YouTube",
+      },
       {
         type: "p",
         dropcap: true,
-        html: 'Neural Lattice is an attempt to see inside the parts of a model that nobody looks at. Weights, biases, and the stubborn correlations between them are normally abstracted away behind inference APIs. Under <span class="inline-metadata">NEXUS</span> we treated those quantities as architecture — load-bearing members in a structure that happens to think.',
-      },
-      {
-        type: "p",
-        html: 'The visual is a projection: a small vision transformer\'s attention heads, drawn as a 3D lattice, colored by activation magnitude as a sample passes through the network. What looks at first like a loose cloud of points snaps, at certain layers, into startlingly regular <span class="inline-metadata">AI/ML</span> scaffolding — corridors, gates, and planes that persist across inputs.',
-      },
-      {
-        type: "quote",
-        text: "The model is not a black box. It is a room we forgot how to draw the floor plan of.",
-      },
-      {
-        type: "image",
-        src: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1400&auto=format&fit=crop",
-        alt: "Neural lattice projection",
-        caption: "Fig 03.1 — Attention Head Projection, Layer 6 / NEXUS",
-      },
-      {
-        type: "p",
-        html: "The goal was never interpretability in the rigorous sense — there are teams doing that work, with better tools and more patience. This project sits one step to the side: a visual argument that these systems have shape, that the shape is worth looking at, and that the first honest response to any frontier model is probably to stand back and draw it.",
+        html: `First pass blocking. Blocking plus. Spline pass animation. All done in UNREAL 5.7.`,
       },
     ],
   },
