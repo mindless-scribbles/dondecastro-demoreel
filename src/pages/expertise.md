@@ -4,7 +4,7 @@ title: Expertise — Don De Castro
 description: Resume and experience summary for Don De Castro — Technical Animator & Motion Edit Supervisor.
 ---
 
-# Don De Castro
+# Don<br />De Castro
 
 **Technical Animator | Motion Edit Supervisor | Virtual Production**
 
