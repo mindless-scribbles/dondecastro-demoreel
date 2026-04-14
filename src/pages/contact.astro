@@ -1,0 +1,334 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+const success = Astro.url.searchParams.get("success") === "1";
+const email = "dondecastro@gmail.com";
+const archiveUpdated = "04.14.26";
+---
+
+<BaseLayout title="Contact — Don De Castro">
+  <main class="min-h-screen flex flex-col p-6 md:p-12 relative z-10">
+    <SiteHeader />
+
+    <div class="contact-strip">
+      <span>CONTACT_ARCHIVE // TRANSMISSION_OPEN</span>
+      <span>{archiveUpdated}</span>
+    </div>
+
+    <section class="contact-grid">
+      <form
+        class="contact-form"
+        name="contact"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        action="/contact?success=1"
+      >
+        <input type="hidden" name="form-name" value="contact" />
+        <p class="hp-field">
+          <label>Don't fill this out: <input name="bot-field" /></label>
+        </p>
+
+        {success && (
+          <p class="form-success">TRANSMISSION RECEIVED. THANK YOU.</p>
+        )}
+
+        <div class="form-group">
+          <label class="form-label" for="name">ID // NAME</label>
+          <input class="form-input" type="text" id="name" name="name" required placeholder="OPERATOR_01" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">COORDINATES // EMAIL</label>
+          <input class="form-input" type="email" id="email" name="email" required placeholder="INPUT@SYSTEM.ARCHIVE" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="message">QUERY // MESSAGE</label>
+          <textarea class="form-input form-textarea" id="message" name="message" rows="5" required placeholder="INITIATING HANDSHAKE..."></textarea>
+        </div>
+
+        <button class="submit-btn" type="submit">
+          <span class="btn-fill" aria-hidden="true"></span>
+          <span class="submit-label">Transmit</span>
+        </button>
+      </form>
+
+      <aside class="contact-details">
+        <p>CURRENT_LOC: LOS ANGELES, CA</p>
+        <p>
+          EMAIL:
+          <button class="email-btn" type="button" data-email={email}>
+            <span>{email.toUpperCase()}</span>
+            <span class="copied-tip">EMAIL COPIED</span>
+          </button>
+        </p>
+        <p>STATUS: <span class="status-dot" aria-hidden="true"></span> AVAILABLE FOR COLLABORATION</p>
+        <p>ARCHIVE_UPDATED: {archiveUpdated}</p>
+
+        <p class="details-heading">SOCIALS:</p>
+        <p>
+          <a href="https://www.linkedin.com/in/don-de-castro-7a97293" target="_blank" rel="noopener noreferrer">LINKEDIN.LOG</a>
+        </p>
+        <p>
+          <a href="https://www.youtube.com/@mindless_scribbles" target="_blank" rel="noopener noreferrer">YOUTUBE.MP4</a>
+        </p>
+      </aside>
+    </section>
+
+    <div class="contact-strip contact-strip-footer">
+      <span>END_TRANSMISSION</span>
+      <span>© 2026 DON DE CASTRO</span>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>(".email-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const email = btn.dataset.email;
+      if (!email) return;
+      try {
+        await navigator.clipboard.writeText(email);
+        btn.classList.add("copied");
+        setTimeout(() => btn.classList.remove("copied"), 1500);
+      } catch {
+        // clipboard unavailable — silently ignore
+      }
+    });
+  });
+</script>
+
+<style>
+  .contact-strip {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(244, 244, 245, 0.5);
+    padding: 1.5rem 0 1rem;
+  }
+
+  .contact-strip-footer {
+    margin-top: auto;
+    padding: 2rem 0 0.5rem;
+    color: rgba(244, 244, 245, 0.35);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    padding: 2rem 0;
+    flex-grow: 1;
+    align-content: center;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .hp-field {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid rgba(244, 244, 245, 0.2);
+    padding-bottom: 0.5rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-group:focus-within {
+    border-bottom-color: var(--color-accent);
+  }
+
+  .form-label {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(244, 244, 245, 0.5);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    width: 100%;
+    padding: 0.25rem 0;
+  }
+
+  .form-input::placeholder {
+    color: rgba(244, 244, 245, 0.25);
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 6rem;
+  }
+
+  .form-success {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    padding: 0.75rem 1rem;
+  }
+
+  .submit-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    margin-top: 0.5rem;
+    padding: 0.85rem 2rem;
+    border: 1px solid rgba(244, 244, 245, 0.3);
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+    overflow: hidden;
+    isolation: isolate;
+    transition: border-color 0.3s ease;
+  }
+
+  .submit-btn:hover {
+    border-color: var(--color-accent);
+  }
+
+  .submit-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+  }
+
+  .btn-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: var(--color-accent);
+    z-index: -1;
+    transition: width 0.3s ease;
+  }
+
+  .submit-btn:hover .btn-fill {
+    width: 100%;
+  }
+
+  .contact-details {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 2;
+    color: rgba(244, 244, 245, 0.85);
+  }
+
+  .contact-details p {
+    margin: 0;
+  }
+
+  .details-heading {
+    margin-top: 1.5rem !important;
+    color: rgba(244, 244, 245, 0.5);
+  }
+
+  .contact-details a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .contact-details a:hover {
+    color: var(--color-accent);
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    margin: 0 0.25rem 0 0.15rem;
+    vertical-align: middle;
+    box-shadow: 0 0 6px var(--color-accent);
+  }
+
+  .email-btn {
+    position: relative;
+    display: inline-block;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+
+  .email-btn:hover {
+    color: var(--color-accent);
+  }
+
+  .copied-tip {
+    position: absolute;
+    left: calc(100% + 0.75rem);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.625rem;
+    letter-spacing: 0.15em;
+    color: var(--color-bg);
+    background: var(--color-accent);
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .email-btn.copied .copied-tip {
+    opacity: 1;
+  }
+
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .contact-strip {
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+    }
+
+    .contact-details {
+      font-size: 0.7rem;
+    }
+  }
+</style>
