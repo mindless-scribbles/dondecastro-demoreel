@@ -5,5 +5,8 @@ export default defineConfig({
   site: "https://www.dondecastro.com",
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      allowedHosts: [".trycloudflare.com"],
+    },
   },
 });

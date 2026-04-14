@@ -196,7 +196,16 @@
 
     .play-actions {
       display: inline-flex;
-      transform: translateY(-2.5rem);
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(10vh + 5.18vw + 7.625rem);
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .play-actions {
+      bottom: calc(10vh + 5.18vw + 8.875rem);
     }
   }
 
