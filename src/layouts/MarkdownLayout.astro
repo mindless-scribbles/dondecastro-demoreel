@@ -1,0 +1,163 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  frontmatter?: { title?: string; description?: string };
+}
+
+const { frontmatter, title, description } = Astro.props;
+const pageTitle = frontmatter?.title ?? title;
+const pageDescription = frontmatter?.description ?? description;
+
+const expertiseNav = [
+  { label: "Home", href: "/" },
+  { label: "Journal", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+];
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <div class="page-frame">
+    <div class="page-frame-inner">
+      <SiteHeader navItems={expertiseNav} />
+      <article class="prose">
+        <slot />
+      </article>
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* Hide the viewport-fixed frame on markdown-layout pages so our
+     content-height border is the only one. */
+  body:has(.page-frame) .frame {
+    display: none;
+  }
+</style>
+
+<style>
+  .page-frame {
+    position: relative;
+    z-index: 10;
+    margin: 1.5rem;
+    border: 1px solid rgba(244, 244, 245, 0.1);
+    min-height: calc(100vh - 3rem);
+  }
+
+  .page-frame-inner {
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-frame {
+      margin: 0.75rem;
+      min-height: calc(100vh - 1.5rem);
+    }
+
+    .page-frame-inner {
+      padding: 1rem;
+    }
+  }
+
+  .prose {
+    max-width: 68ch;
+    margin: 0 auto;
+    padding: 3rem 1rem 4rem;
+  }
+
+  @media (max-width: 768px) {
+    .prose {
+      padding: 2rem 0.5rem 3rem;
+    }
+  }
+
+  .prose :global(h1) {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0 0 0.5rem;
+    color: var(--color-text);
+  }
+
+  .prose :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1.25rem;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    margin: 3rem 0 1.25rem;
+    color: var(--color-text);
+  }
+
+  .prose :global(h3) {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin: 2rem 0 0.25rem;
+    color: var(--color-accent);
+  }
+
+  .prose :global(p) {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0 0 1rem;
+    color: rgba(244, 244, 245, 0.85);
+  }
+
+  .prose :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: opacity 0.2s ease;
+  }
+
+  .prose :global(a:hover) {
+    opacity: 0.7;
+  }
+
+  .prose :global(ul) {
+    margin: 0 0 1rem;
+    padding-left: 1.25rem;
+    list-style: none;
+  }
+
+  .prose :global(li) {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0 0 0.4rem;
+    color: rgba(244, 244, 245, 0.85);
+    position: relative;
+  }
+
+  .prose :global(li::before) {
+    content: "›";
+    position: absolute;
+    left: -1.25rem;
+    color: var(--color-accent);
+  }
+
+  .prose :global(hr) {
+    border: none;
+    border-top: 1px solid rgba(244, 244, 245, 0.1);
+    margin: 3rem 0;
+  }
+
+  .prose :global(strong) {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .prose :global(em) {
+    font-style: italic;
+    color: rgba(244, 244, 245, 0.9);
+  }
+</style>

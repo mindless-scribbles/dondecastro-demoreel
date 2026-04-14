@@ -1,12 +1,18 @@
 ---
-const navItems = [
+interface Props {
+  navItems?: { label: string; href: string }[];
+}
+
+const defaultNav = [
   { label: "Expertise", href: "/expertise" },
   { label: "Journal", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
+
+const { navItems = defaultNav } = Astro.props;
 ---
 
-<header class="flex justify-between items-start w-full relative z-20 px-3 py-2 md:px-4 md:py-3">
+<header class="flex justify-between items-start w-full relative z-30 px-3 py-2 md:px-4 md:py-3">
   <a href="/" class="brand" aria-label="MS — Creative Agency, home">
     <span class="brand-letters">
       <span class="brand-m">M</span>
