@@ -23,6 +23,16 @@ const expertiseNav = [
   <div class="page-frame">
     <div class="page-frame-inner">
       <SiteHeader navItems={expertiseNav} />
+      <div class="download-btn-wrap">
+        <a class="download-btn" href="/DonDeCastro-Resume.pdf" download>
+          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span class="download-label">Download Resume</span>
+        </a>
+      </div>
       <article class="prose">
         <slot />
       </article>
@@ -60,6 +70,42 @@ const expertiseNav = [
     .page-frame-inner {
       padding: 1rem;
     }
+  }
+
+  .download-btn-wrap {
+    max-width: 68ch;
+    margin: 0 auto;
+    padding: 2rem 1rem 0;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.4rem;
+    border: 1px solid rgba(244, 244, 245, 0.3);
+    background: transparent;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    text-decoration: none;
+    transition: border-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+  }
+
+  .download-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .download-icon {
+    width: 0.9rem;
+    height: 0.9rem;
   }
 
   .prose {
