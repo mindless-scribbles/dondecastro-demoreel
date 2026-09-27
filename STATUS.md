@@ -23,6 +23,14 @@
 - Articles are drafted from Don's own video transcripts (yt-dlp auto-captions → plain text) and descriptions; nothing added that he didn't say.
 - Device testing via Netlify draft deploys only: `npm run build && netlify deploy --site ef46c49f-b6b4-46b8-82ec-9b7bebacbd54 --dir dist --no-build --alias hybrid-redesign` (never `--prod`) → https://hybrid-redesign--ddc-experiments.netlify.app. Use a QR code on iOS (typed `--` becomes an em dash).
 
+## In Progress: `feature/journal-collection` (not pushed, not merged; hold until the Instagram import)
+
+- Journal moved to one Markdown file per entry (`src/content/journal/YYYY-MM-DD-slug/index.md`, schema in `src/content.config.ts`, read via `getJournal()` in `src/lib/journal.ts`). Stable chronological ids (oldest = [001]); untitled posts use the caption's first line; photos beside the file, optimized by Astro.
+- `npm run journal:from-youtube <url>` now writes an entry file using the local upload date.
+- Reviewed on the draft deploy. **Don wants this to ship together with the Instagram posts.**
+- Next: Don is requesting his Instagram data download (Accounts Center → Download your information → Posts, JSON, High quality). When it arrives, write `scripts/journal-from-instagram.mjs` against the real export (`posts_1.json` etc.; captions in Meta exports are usually mojibake and need latin1 → utf8 re-decoding), let Don pick which posts to import, copy media into entry folders, then PR → preview → merge.
+- Longer term (Don's goal): post on the site first (phone-friendly posting page that writes these same entry files), then cross-post to Instagram.
+
 ## Next Steps
 
 - [ ] Reel panel background is a stock Unsplash photo (`ReelPanel.astro` `.video-placeholder`). Don will provide a frame from his own work; swap it in.
