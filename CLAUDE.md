@@ -11,7 +11,7 @@ Portfolio and blog site for Don De Castro, a Technical Animator and Motion Edit 
 
 - **Framework:** Astro (astro.build)
 - **Styling:** Tailwind CSS 4
-- **Content:** Astro Content Collections with MDX for blog posts
+- **Content:** Astro Content Collections (Markdown); the journal is `src/content/journal/`
 - **Interactive embeds:** Three.js, p5.js, GLSL (loaded per-post, not globally)
 - **Deployment:** Netlify via GitHub (auto-deploy on push to `main`)
 - **Domain:** www.dondecastro.com
@@ -30,17 +30,23 @@ Portfolio and blog site for Don De Castro, a Technical Animator and Motion Edit 
 
 ## Content Collections
 
-### Blog Posts (`src/content/blog/`)
-Frontmatter schema:
+### Journal (`src/content/journal/`)
+The journal is the blog: the site is where Don posts first. One folder per entry, `YYYY-MM-DD-slug/index.md`, with that entry's photos beside it. Schema lives in `src/content.config.ts`; `src/lib/journal.ts` (`getJournal()`) sorts by date, assigns stable ids (oldest = [001]) and is what every page reads.
 ```yaml
-title: string
-date: date
-description: string
-tags: string[]          # e.g. ["rigging", "math", "touchdesigner", "houdini", "three.js"]
-thumbnail: string       # path to thumbnail image
-videoEmbed: string?     # optional YouTube/Vimeo URL
-draft: boolean
+slug: string            # URL: /journal/<slug>
+title: string?          # optional; untitled posts use the body's first line
+date: date              # local date (not UTC)
+subtitle: string?
+format: string          # VIDEO, PHOTO, CAROUSEL
+category: string        # RIGGING, TOOLS, ANIM, ANIM/VFX, ...
+tags: string[]?         # extra card chips
+youtube: string?        # video id, embedded above the article
+cover: image?           # local; else YouTube thumb, else first photo
+images: {src, alt}[]?   # local photos, optimized by Astro
+source: {platform: youtube|instagram, url}?
+draft: boolean?         # hidden in production builds
 ```
+The Markdown body is the article or caption. The newest entry is automatically the featured card.
 
 ### Projects (`src/content/work/`)
 Frontmatter schema:
@@ -113,20 +119,12 @@ Build these as reusable Astro/MDX components:
 - **Blog content:** Same embed approach for longer videos. For short clips or loops, consider self-hosted MP4/WebM if files are small (<20MB), otherwise embed from YouTube.
 - **Interactive demos:** Rendered client-side via Three.js or p5.js components in MDX.
 
-## Blog Post Workflow
+## Journal Post Workflow
 
-1. Create new `.mdx` file in `src/content/blog/`
-2. Add frontmatter (title, date, tags, thumbnail, etc.)
-3. Write content in Markdown
-4. For interactive demos, import and use components:
-   ```mdx
-   import InteractiveCanvas from '../../components/InteractiveCanvas.astro';
-
-   Here's the rigging concept in action:
-
-   <InteractiveCanvas type="threejs" src="/demos/rig-demo.js" />
-   ```
-5. Commit and push; Netlify auto-deploys.
+- **From a YouTube video:** `npm run journal:from-youtube <url> [--slug my-slug] [--date YYYY-MM-DD]` creates the entry with the title, local upload date and embed filled in. Then fill in `subtitle`, `category` and the article.
+- **Photo post:** create `src/content/journal/YYYY-MM-DD-slug/index.md`, drop the photos in the same folder, list them under `images:` (`src: ./photo.jpg`), and write the caption as the body. Title is optional.
+- Commit and push; Netlify auto-deploys from `main`. Preview first with a Netlify draft deploy (see STATUS.md).
+- Not yet built: the Instagram importer (from Don's Instagram data download) and a phone-friendly posting page that writes these same files.
 
 ## Development Commands
 

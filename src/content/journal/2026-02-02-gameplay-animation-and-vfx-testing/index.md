@@ -1,7 +1,7 @@
 ---
 slug: gameplay-animation-and-vfx-testing
 title: "Gameplay Animation and VFX testing"
-date: 2026-02-03
+date: 2026-02-02
 subtitle: "Unreal VFX Gameplay"
 format: VIDEO
 category: "ANIM/VFX"

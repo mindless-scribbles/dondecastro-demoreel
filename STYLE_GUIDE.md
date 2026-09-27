@@ -111,6 +111,7 @@ Tracking: `--tracking-label` 0.1em, `--tracking-mini` 0.2em. 10px mono is allowe
 - Card: `--color-surface`, `--radius-lg`, 1px `--color-border`, `--space-1` padding around a `--radius-md` thumbnail, `--space-2` to the meta block.
 - Title Syne 600, id in mono muted (accent on hover), tags as `--radius-sm` chips on `--color-surface-raised`.
 - Grid: 1 column phone, 2 iPad portrait, 4 from 1024. Video entries (`video: true`) span 2 columns wherever there are 2+.
+- Order and ids: newest first by `date`; ids are stable and chronological (oldest = [001]), so a post keeps its number forever.
 - Featured: the first (newest) entry spans the full row. From 1024 it's side by side (16:9 thumb over 3 of 4 columns, meta in the 4th, bottom-aligned); below that it's a full-width card. It adds an accent "Latest [id]" kicker, a `--text-title` title from 768, and the entry's subtitle.
 - Thumbnails: grayscale → color on hover for pointer devices; full color on touch.
 

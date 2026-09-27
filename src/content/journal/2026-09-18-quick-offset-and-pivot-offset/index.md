@@ -1,7 +1,7 @@
 ---
 slug: quick-offset-and-pivot-offset
 title: "Quick Offset and Pivot Offset"
-date: 2026-09-19
+date: 2026-09-18
 subtitle: "Motion Toolset 02: additive edits in Sequencer"
 format: VIDEO
 category: "TOOLS"

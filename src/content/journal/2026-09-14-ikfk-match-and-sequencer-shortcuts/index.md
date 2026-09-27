@@ -1,7 +1,7 @@
 ---
 slug: ikfk-match-and-sequencer-shortcuts
 title: "IK/FK Match and Sequencer Shortcuts"
-date: 2026-09-15
+date: 2026-09-14
 subtitle: "Motion Toolset 01: the rig"
 format: VIDEO
 category: "RIGGING"
