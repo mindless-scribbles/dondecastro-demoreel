@@ -1,0 +1,191 @@
+---
+// One journal entry as a rounded card. Links to its entry page when it has one.
+import type { JournalEntry } from "../data/journalEntries";
+
+interface Props {
+  entry: JournalEntry;
+}
+
+const { entry } = Astro.props;
+const Tag = entry.hasPage ? "a" : "article";
+const linkProps = entry.hasPage ? { href: `/journal/${entry.slug}` } : {};
+---
+
+<Tag class:list={["card", { "card-video": entry.video, "card-link": entry.hasPage }]} {...linkProps}>
+  <div class="thumb" style={`--src: url('${entry.image}');`}>
+    <div class="thumb-base"></div>
+    {
+      entry.video && (
+        <span class="play-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+      )
+    }
+  </div>
+  <div class="meta">
+    <div class="title-row">
+      <span class="title">{entry.title}</span>
+      <span class="id">{entry.id}</span>
+    </div>
+    <div class="tags">
+      {entry.tags.map((t) => <span class="tag">{t}</span>)}
+    </div>
+  </div>
+</Tag>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .card-video {
+    grid-column: span var(--video-span, 1);
+  }
+
+  .thumb {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-raised);
+  }
+
+  .card-video .thumb {
+    aspect-ratio: 16 / 9;
+  }
+
+  .thumb-base {
+    position: absolute;
+    inset: 0;
+    background-image: var(--src);
+    background-size: cover;
+    background-position: center;
+    filter: grayscale(0%) contrast(1.05);
+    transition: filter 0.4s ease, transform 0.6s ease;
+  }
+
+  .play-badge {
+    position: absolute;
+    left: var(--space-2);
+    bottom: var(--space-2);
+    display: grid;
+    place-items: center;
+    width: var(--space-5);
+    height: var(--space-5);
+    border-radius: 50%;
+    background: rgba(7, 7, 9, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--color-text);
+    transition: background-color 0.3s ease;
+  }
+
+  .play-badge svg {
+    width: var(--space-2);
+    height: var(--space-2);
+    fill: currentColor;
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-inline: var(--space-1);
+  }
+
+  .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: var(--leading-title);
+    text-wrap: balance;
+  }
+
+  .id {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s ease;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-half);
+  }
+
+  .tag {
+    padding: var(--space-half) var(--space-1);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: var(--leading-mini);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: #a1a1aa;
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+
+  /* Grayscale → color on hover only where hover exists; touch shows color. */
+  @media (hover: hover) {
+    .thumb-base {
+      filter: grayscale(100%) contrast(1.15);
+    }
+
+    .card:hover {
+      background: var(--color-surface-raised);
+      border-color: var(--color-border-strong);
+    }
+
+    .card-link:hover {
+      transform: translateY(-2px);
+    }
+
+    .card:hover .thumb-base {
+      filter: grayscale(0%) contrast(1.05);
+      transform: scale(1.03);
+    }
+
+    .card:hover .id {
+      color: var(--color-accent);
+    }
+
+    .card:hover .tag {
+      color: var(--color-text);
+      background: rgba(255, 51, 0, 0.12);
+    }
+
+    .card:hover .play-badge {
+      background: var(--color-accent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .thumb-base {
+      transition: none;
+    }
+  }
+</style>

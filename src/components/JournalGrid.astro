@@ -1,0 +1,39 @@
+---
+// Journal entries as a card grid. 1 col phone, 2 iPad portrait, 4 from 1024.
+// Video entries span 2 columns wherever there are at least 2.
+import JournalCard from "./JournalCard.astro";
+import type { JournalEntry } from "../data/journalEntries";
+
+interface Props {
+  entries: JournalEntry[];
+}
+
+const { entries } = Astro.props;
+---
+
+<div class="journal-grid">
+  {entries.map((entry) => <JournalCard entry={entry} />)}
+</div>
+
+<style>
+  .journal-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-flow: row dense;
+    gap: var(--gutter);
+    --video-span: 1;
+  }
+
+  @media (min-width: 768px) {
+    .journal-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      --video-span: 2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .journal-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

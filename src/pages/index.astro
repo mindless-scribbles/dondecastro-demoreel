@@ -3,12 +3,81 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import ReelPanel from "../components/ReelPanel.astro";
 import HomeHero from "../components/HomeHero.astro";
+import JournalGrid from "../components/JournalGrid.astro";
+import { journalEntries } from "../data/journalEntries";
 ---
 
 <BaseLayout>
-  <main class="min-h-screen flex flex-col justify-between p-6 md:p-12 relative z-10">
-    <SiteHeader />
-    <ReelPanel />
-    <HomeHero />
-  </main>
+  <div class="home-root relative z-10">
+    <SiteHeader sticky />
+    <main class="page-container home">
+      <ReelPanel />
+      <HomeHero />
+      <section id="journal" class="journal-section" aria-labelledby="journal-heading">
+        <div class="section-head">
+          <h2 id="journal-heading" class="section-title">Journal</h2>
+          <span class="section-meta">Entries 001–{String(journalEntries.length).padStart(3, "0")}</span>
+        </div>
+        <JournalGrid entries={journalEntries} />
+      </section>
+    </main>
+  </div>
 </BaseLayout>
+
+<style is:global>
+  /* The fixed viewport frame doesn't suit a scrolling page. */
+  body:has(.home-root) .frame {
+    display: none;
+  }
+</style>
+
+<style>
+  .home {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    padding-block: var(--space-2) var(--space-12);
+  }
+
+  .journal-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    scroll-margin-top: var(--space-12);
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .section-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-heading);
+    line-height: var(--leading-heading);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .section-meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
+    letter-spacing: var(--tracking-mini);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (min-width: 768px) {
+    .home {
+      gap: var(--space-12);
+    }
+  }
+</style>
