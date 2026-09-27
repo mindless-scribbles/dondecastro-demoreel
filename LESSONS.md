@@ -18,3 +18,5 @@ staging for 2 hours. -->
 **Use `overflow-x: clip`, never `hidden`, on `body`:** with `html` and `body` both set to `overflow-x: hidden`, body becomes its own scroll container and every `position: sticky` header silently stops sticking. Found 2026-09-27 during the hybrid redesign.
 
 **No `orientation` media queries:** the old home page stacked portrait/landscape special cases with viewport math (`bottom: calc(10vh + 5.18vw + ...)`) and broke on iPad. Size with `aspect-ratio` and the 768 / 1024 / 1280 breakpoints instead (STYLE_GUIDE §3).
+
+**The surname is "De Castro": never let it break as "Don De / Castro":** `text-wrap: balance` on the home hero split the name after "De" on a portrait iPhone. Keep the full name on one line (`white-space: nowrap` with width-based sizing) and use `De&nbsp;Castro` wherever the name can wrap. Found 2026-09-27 on a real iPhone; desktop width checks didn't catch it.

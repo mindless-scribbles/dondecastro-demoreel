@@ -23,11 +23,13 @@
     margin: 0;
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: var(--text-hero);
+    /* Always one line: the name is ~13.9× its font size wide in Syne 800,
+       so size from the available width (÷14.5 leaves slack), capped at the hero size. */
+    font-size: min(var(--text-hero), calc((100vw - 2 * var(--page-margin)) / 14.5));
     line-height: 1;
     letter-spacing: -0.02em;
     text-transform: uppercase;
-    text-wrap: balance;
+    white-space: nowrap;
     color: var(--color-text);
   }
 
