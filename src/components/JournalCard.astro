@@ -12,7 +12,7 @@ const { entry, featured = false } = Astro.props;
 ---
 
 <a
-  class:list={["card", "card-link", { "card-video": entry.isVideo, "card-featured": featured }]}
+  class:list={["card", "card-link", { "card-video": entry.wide, "card-featured": featured }]}
   href={`/journal/${entry.slug}`}
 >
   <div class="thumb" style={`--src: url('${entry.thumb}');`}>

@@ -43,6 +43,7 @@ tags: string[]?         # extra card chips
 youtube: string?        # video id, embedded above the article
 cover: image?           # local; else YouTube thumb, else first photo
 images: {src, alt}[]?   # local photos, optimized by Astro
+videos: {src, poster}[]? # local clips (./clip.mp4), e.g. Instagram reels
 source: {platform: youtube|instagram, url}?
 draft: boolean?         # hidden in production builds
 ```
@@ -124,7 +125,8 @@ Build these as reusable Astro/MDX components:
 - **From a YouTube video:** `npm run journal:from-youtube <url> [--slug my-slug] [--date YYYY-MM-DD]` creates the entry with the title, local upload date and embed filled in. Then fill in `subtitle`, `category` and the article.
 - **Photo post:** create `src/content/journal/YYYY-MM-DD-slug/index.md`, drop the photos in the same folder, list them under `images:` (`src: ./photo.jpg`), and write the caption as the body. Title is optional.
 - Commit and push; Netlify auto-deploys from `main`. Preview first with a Netlify draft deploy (see STATUS.md).
-- Not yet built: the Instagram importer (from Don's Instagram data download) and a phone-friendly posting page that writes these same files.
+- **From Instagram:** request "Download your information" (Posts + Reels, **All time**), then `npm run journal:from-instagram -- <export.zip> --list` and `... --pick N --slug my-slug --category DRAWING`. It copies the photos or clip (plus an ffmpeg poster frame), converts the caption to Markdown (@handles become links) and links `source` to the profile, since the export has no post URLs. Fill in the image alt text afterwards.
+- Not yet built: a phone-friendly posting page that writes these same files.
 
 ## Development Commands
 

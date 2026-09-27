@@ -22,6 +22,8 @@ const journal = defineCollection({
       /** Card and hero image. Falls back to the YouTube thumbnail, then the first photo. */
       cover: image().optional(),
       images: z.array(z.object({ src: image(), alt: z.string() })).default([]),
+      /** Local clips (e.g. Instagram reels) beside the entry: src is "./clip.mp4". */
+      videos: z.array(z.object({ src: z.string(), poster: image().optional() })).default([]),
       /** Where this was also posted (e.g. the YouTube or Instagram original). */
       source: z
         .object({ platform: z.enum(["youtube", "instagram"]), url: z.string().url() })
