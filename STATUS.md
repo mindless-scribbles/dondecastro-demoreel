@@ -2,20 +2,19 @@
 
 ## Last Session
 
-- **Date:** 2026-09-27 (third session block)
-- **Branches** (stacked, none merged, `main` untouched):
-  - `redesign/hybrid-layout` (pushed): 8pt design system on every page.
-  - `feature/inline-reel-player` (pushed): reels play inside the panel.
-  - `content/motion-toolset-journal` (pushed, current): new journal entries, trimmed journal, featured card, redirects.
-- **Summary:** Built lightbox and inline reel players; Don tested both on laptop/iPhone/iPad and chose inline. Added three September YouTube uploads as journal entries ("Motion Toolset 01-03") with articles drafted from the video transcripts; Don says they're faithful. Removed every journal entry that isn't Don's own work plus the Character FX and Avatar mocap entries (already the reel buttons). Newest entry is now a full-width featured card.
+- **Date:** 2026-09-27
+- **Live:** the hybrid redesign, inline reel player and Motion Toolset journal shipped to dondecastro.com via PR #2 (merged 2026-09-27). Real reel specs on the panel chips shipped via the `feature/reel-metadata` PR the same day. Old work branches deleted.
+- **Summary:** 8pt design system on every page; reels play inside the panel; journal holds only Don's own work (5 entries, newest featured full-width); reel panel chips show real per-reel resolution and duration on hover/focus, a summary otherwise; made-up Codec and REC chips removed.
 
-## Files Modified
+## Files Modified (this session, all now on `main`)
 
-- `src/components/ReelPanel.astro`: reel buttons play a youtube-nocookie embed inside the panel ("Now playing" bar + 48px close above the video, Esc closes, closing removes the iframe). Panel lands `--space-2` below the header; height-capped so the video fits on screen. Links keep YouTube hrefs for modifier-click / no-JS.
-- `src/data/journalEntries.ts`: 5 entries, all Don's: forward-limb-off-plane-roll, quick-offset-and-pivot-offset, ikfk-match-and-sequencer-shortcuts, gameplay-animation-and-vfx-testing, keyframe-animation-in-unreal
-- `src/components/JournalCard.astro`, `JournalGrid.astro`: `featured` card for the first entry
-- `netlify.toml`: 301s from `/journal/character-fx-demo-reel` and `/journal/mocap-avatar-way-of-water` to `/`
-- `STYLE_GUIDE.md`, `STATUS.md`
+- `src/styles/global.css`, all pages and layouts: design-system tokens, `--header-height`, `.frame` removed
+- `src/components/ReelPanel.astro`: inline YouTube player; `reels` array holds `res` and `duration` (fps is the shared `FPS` constant, 23.98 per Don; YouTube reports it rounded to 24). Summary chip values are computed from the array.
+- `src/data/journalEntries.ts`: 5 entries, all Don's
+- `src/components/JournalCard.astro`, `JournalGrid.astro`: featured newest card
+- `src/components/HomeHero.astro`, `src/pages/index.astro`: one-line name, smaller phone Journal heading
+- `netlify.toml`: 301s for the two retired journal URLs
+- `STYLE_GUIDE.md`, `LESSONS.md`
 
 ## Key Decisions
 
@@ -26,11 +25,11 @@
 
 ## Next Steps
 
-- [ ] Go live: one PR from `content/motion-toolset-journal` → `main` (it contains the redesign and reel player), check the Netlify deploy preview, merge.
 - [ ] Reel panel background is a stock Unsplash photo (`ReelPanel.astro` `.video-placeholder`). Don will provide a frame from his own work; swap it in.
+- [ ] If a reel is re-uploaded or added: update its `id`, `res` and `duration` in the `reels` array in `ReelPanel.astro` (get them with `uvx yt-dlp -J <url>`).
 - [ ] Article follow-ups Don may answer: what "DMC" stands for (entry 003), Unreal version in entry 002 (captions said "5.81"), whether "Anabot" = animBot (entry 002), keep or cut the Claude credit (entry 001).
 - [ ] Contact success banner never shows (static build; read `?success=1` client-side).
-- [ ] Add journal entries with `npm run journal:from-youtube <url> --slug <slug>`; the scaffolder drops entries past cell-12, and the newest automatically becomes the featured card.
+- [ ] Add journal entries with `npm run journal:from-youtube <url> --slug <slug>`; the newest automatically becomes the featured card.
 
 ## Active Context
 
