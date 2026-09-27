@@ -4,10 +4,24 @@
 // Reels play inside the panel (YouTube embed), never in a new tab. The links keep
 // their YouTube hrefs so modifier-clicks and no-JS still work.
 
+// Specs are the real reels: resolution from YouTube's top format, 23.98fps per Don
+// (YouTube rounds it to 24), duration mm:ss. The meta chips show a reel's specs while
+// its button is hovered or focused, and the summary otherwise (always, on touch).
+const FPS = "23.98fps";
 const reels = [
-  { id: "_6fQY8wwXQs", label: "Tech Anim" },
-  { id: "4ca-ywgyVdE", label: "Mocap / Anim" },
+  { id: "_6fQY8wwXQs", label: "Tech Anim", res: "1080p", duration: "01:49" },
+  { id: "4ca-ywgyVdE", label: "Mocap / Anim", res: "4K", duration: "01:54" },
 ];
+
+const toSeconds = (mmss: string) => {
+  const [m, s] = mmss.split(":").map(Number);
+  return m * 60 + s;
+};
+const totalSeconds = reels.reduce((sum, r) => sum + toSeconds(r.duration), 0);
+const total = `${String(Math.floor(totalSeconds / 60)).padStart(2, "0")}:${String(totalSeconds % 60).padStart(2, "0")}`;
+const topRes = reels.some((r) => r.res === "4K") ? "4K" : reels[0].res;
+
+const summary = { res: `Up to ${topRes} ${FPS}`, duration: `${reels.length} Reels / ${total}` };
 ---
 
 <section class="reel-panel group" aria-label="Demo reel">
@@ -24,7 +38,14 @@ const reels = [
       <div class="sub-actions">
         {
           reels.map((reel) => (
-            <a class="sub-btn" href={`https://youtu.be/${reel.id}`} data-video-id={reel.id} data-title={reel.label}>
+            <a
+              class="sub-btn"
+              href={`https://youtu.be/${reel.id}`}
+              data-video-id={reel.id}
+              data-title={reel.label}
+              data-res={`${reel.res} ${FPS}`}
+              data-duration={`Duration / ${reel.duration}`}
+            >
               <span class="btn-fill" aria-hidden="true" />
               <span class="sub-label">{reel.label}</span>
             </a>
@@ -34,13 +55,9 @@ const reels = [
     </div>
   </div>
 
-  <div class="meta">
-    <div class="chips">
-      <span class="chip">Res: 4K 23.98fps</span>
-      <span class="chip chip-optional">Codec: RAW.001</span>
-      <span class="chip rec">Rec ●</span>
-    </div>
-    <span class="chip">Duration / 01:42</span>
+  <div class="meta" data-res={summary.res} data-duration={summary.duration}>
+    <span class="chip">Res: <span class="meta-res">{summary.res}</span></span>
+    <span class="chip meta-duration">{summary.duration}</span>
   </div>
 
   <!-- The panel itself becomes the player. -->
@@ -112,6 +129,31 @@ const reels = [
     inline?.querySelector(".player-close")?.addEventListener("click", closeInline);
     panel.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && panel.classList.contains("is-playing")) closeInline();
+    });
+  });
+
+  // ---------- Meta chips follow the hovered / focused reel ----------
+  document.querySelectorAll<HTMLElement>(".reel-panel").forEach((panel) => {
+    const meta = panel.querySelector<HTMLElement>(".meta");
+    const res = meta?.querySelector<HTMLElement>(".meta-res");
+    const duration = meta?.querySelector<HTMLElement>(".meta-duration");
+    const subActions = panel.querySelector<HTMLElement>(".sub-actions");
+    if (!meta || !res || !duration || !subActions) return;
+
+    const show = (source: HTMLElement) => {
+      res.textContent = source.dataset.res ?? "";
+      duration.textContent = source.dataset.duration ?? "";
+    };
+
+    subActions.querySelectorAll<HTMLElement>(".sub-btn").forEach((btn) => {
+      btn.addEventListener("pointerenter", () => show(btn));
+      btn.addEventListener("focus", () => show(btn));
+    });
+    subActions.addEventListener("pointerleave", () => {
+      if (!subActions.contains(document.activeElement)) show(meta);
+    });
+    subActions.addEventListener("focusout", (e) => {
+      if (!subActions.contains(e.relatedTarget as Node | null)) show(meta);
     });
   });
 
@@ -318,14 +360,9 @@ const reels = [
     right: var(--space-2);
     bottom: var(--space-2);
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-end;
-    gap: var(--space-1);
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
     gap: var(--space-1);
   }
 
@@ -344,38 +381,11 @@ const reels = [
     font-variant-numeric: tabular-nums;
   }
 
-  .rec {
-    color: var(--color-accent);
-    animation: pulse-rec 1.6s ease-in-out infinite;
-  }
-
-  @keyframes pulse-rec {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.4;
-    }
-  }
-
-  @media (max-width: 767px) {
-    .chip-optional {
-      display: none;
-    }
-  }
-
   @media (min-width: 768px) {
     .meta {
       left: var(--space-3);
       right: var(--space-3);
       bottom: var(--space-3);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .rec {
-      animation: none;
     }
   }
 
