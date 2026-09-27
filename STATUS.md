@@ -6,7 +6,7 @@
 - **Branches** (stacked, none merged, `main` untouched):
   - `redesign/hybrid-layout` (pushed): 8pt design system on every page.
   - `feature/inline-reel-player` (pushed): reels play inside the panel.
-  - `content/motion-toolset-journal` (**not pushed yet**, current): new journal entries, trimmed journal, featured card, redirects.
+  - `content/motion-toolset-journal` (pushed, current): new journal entries, trimmed journal, featured card, redirects.
 - **Summary:** Built lightbox and inline reel players; Don tested both on laptop/iPhone/iPad and chose inline. Added three September YouTube uploads as journal entries ("Motion Toolset 01-03") with articles drafted from the video transcripts; Don says they're faithful. Removed every journal entry that isn't Don's own work plus the Character FX and Avatar mocap entries (already the reel buttons). Newest entry is now a full-width featured card.
 
 ## Files Modified
@@ -26,7 +26,6 @@
 
 ## Next Steps
 
-- [ ] Push `content/motion-toolset-journal`.
 - [ ] Go live: one PR from `content/motion-toolset-journal` → `main` (it contains the redesign and reel player), check the Netlify deploy preview, merge.
 - [ ] Reel panel background is a stock Unsplash photo (`ReelPanel.astro` `.video-placeholder`). Don will provide a frame from his own work; swap it in.
 - [ ] Article follow-ups Don may answer: what "DMC" stands for (entry 003), Unreal version in entry 002 (captions said "5.81"), whether "Anabot" = animBot (entry 002), keep or cut the Claude credit (entry 001).
