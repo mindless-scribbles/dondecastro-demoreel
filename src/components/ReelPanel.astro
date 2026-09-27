@@ -1,10 +1,8 @@
 ---
 // Reel preview panel: video placeholder, play button with reel sub-buttons, metadata chips.
 // In normal document flow; sizes from aspect-ratio, not viewport math.
-// Reels play on the page (YouTube embed), never in a new tab. The links keep their
-// YouTube hrefs so modifier-clicks and no-JS still work.
-// TEMP: two player variants for comparison, ?player=inline (in the panel) or the
-// default lightbox. Remove the loser once chosen.
+// Reels play inside the panel (YouTube embed), never in a new tab. The links keep
+// their YouTube hrefs so modifier-clicks and no-JS still work.
 
 const reels = [
   { id: "_6fQY8wwXQs", label: "Tech Anim" },
@@ -45,7 +43,7 @@ const reels = [
     <span class="chip">Duration / 01:42</span>
   </div>
 
-  <!-- Variant: inline. The panel itself becomes the player. -->
+  <!-- The panel itself becomes the player. -->
   <div class="inline-player" hidden>
     <div class="player-bar">
       <span class="chip now-playing">Now playing / <span class="now-title"></span></span>
@@ -57,23 +55,9 @@ const reels = [
   </div>
 </section>
 
-<!-- Variant: lightbox. -->
-<dialog class="reel-lightbox" aria-label="Demo reel">
-  <div class="player-bar">
-    <span class="chip now-playing">Now playing / <span class="now-title"></span></span>
-    <button class="player-close" type="button" aria-label="Close reel">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
-    </button>
-  </div>
-  <div class="lightbox-inner">
-    <div class="player-frame"></div>
-  </div>
-</dialog>
 
 <script>
   // ---------- Reel playback ----------
-  const variant = new URLSearchParams(location.search).get("player") === "inline" ? "inline" : "lightbox";
-
   const makeIframe = (id: string, title: string) => {
     const iframe = document.createElement("iframe");
     iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`;
@@ -86,8 +70,6 @@ const reels = [
   document.querySelectorAll<HTMLElement>(".reel-panel").forEach((panel) => {
     const inline = panel.querySelector<HTMLElement>(".inline-player");
     const inlineFrame = inline?.querySelector<HTMLElement>(".player-frame");
-    const dialog = panel.nextElementSibling as HTMLDialogElement | null;
-    const dialogFrame = dialog?.querySelector<HTMLElement>(".player-frame");
     let opener: HTMLElement | null = null;
 
     const closeInline = () => {
@@ -100,26 +82,22 @@ const reels = [
 
     const play = (btn: HTMLElement) => {
       const id = btn.dataset.videoId;
-      if (!id) return;
+      if (!id || !inline || !inlineFrame) return;
       opener = btn;
       const title = btn.dataset.title ?? "";
       const iframe = makeIframe(id, title);
       panel.querySelectorAll(".now-title").forEach((el) => (el.textContent = title));
-      dialog?.querySelectorAll(".now-title").forEach((el) => (el.textContent = title));
 
-      if (variant === "inline" && inline && inlineFrame) {
-        inlineFrame.replaceChildren(iframe);
-        inline.hidden = false;
-        panel.classList.add("is-playing");
-        inline.querySelector<HTMLElement>(".player-close")?.focus({ preventScroll: true });
-        panel.scrollIntoView({
-          block: "start",
-          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-        });
-      } else if (dialog && dialogFrame) {
-        dialogFrame.replaceChildren(iframe);
-        dialog.showModal();
-      }
+      inlineFrame.replaceChildren(iframe);
+      inline.hidden = false;
+      panel.classList.add("is-playing");
+      inline.querySelector<HTMLElement>(".player-close")?.focus({ preventScroll: true });
+      // Lands --space-2 below the header (scroll-margin-top), which is where the panel
+      // already sits at the top of the page, so there it doesn't move.
+      panel.scrollIntoView({
+        block: "start",
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      });
     };
 
     panel.querySelectorAll<HTMLAnchorElement>(".sub-btn[data-video-id]").forEach((btn) => {
@@ -135,25 +113,6 @@ const reels = [
     panel.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && panel.classList.contains("is-playing")) closeInline();
     });
-
-    if (dialog && dialogFrame) {
-      // Removing the iframe is what stops playback. Idempotent, so every close path can call it.
-      const closeLightbox = () => {
-        if (dialog.open) dialog.close();
-        if (dialogFrame.childElementCount) {
-          dialogFrame.replaceChildren();
-          opener?.focus();
-        }
-      };
-      dialog.querySelector(".player-close")?.addEventListener("click", closeLightbox);
-      // Tap on the dimmed backdrop (the dialog box itself, outside the player) closes.
-      dialog.addEventListener("click", (e) => {
-        if (e.target === dialog) closeLightbox();
-      });
-      // Esc: "cancel" fires immediately; "close" is a queued fallback for any other close path.
-      dialog.addEventListener("cancel", closeLightbox);
-      dialog.addEventListener("close", closeLightbox);
-    }
   });
 
   // ---------- Sub-button fill ----------
@@ -479,19 +438,21 @@ const reels = [
     }
   }
 
-  /* ---------- Variant: inline ---------- */
+  /* ---------- Playing ---------- */
   /* While playing, the panel sizes to bar + 16:9 video at every width. */
   .reel-panel.is-playing {
     aspect-ratio: auto;
-    /* Never taller than the space under the sticky header: cap width from the height. */
+    /* Never taller than the space under the sticky header (with a --space-2 gap above
+       and below): cap the width from the height. */
     max-width: min(
       100%,
-      (100dvh - var(--header-height) - var(--touch-target) - 3 * var(--space-1)) * 16 / 9 + 2 * var(--space-1)
+      (100dvh - var(--header-height) - 2 * var(--space-2) - var(--touch-target) - 3 * var(--space-1)) * 16 / 9 +
+        2 * var(--space-1)
     );
     margin-inline: auto;
     padding: var(--space-1);
     background: var(--color-surface);
-    scroll-margin-top: var(--header-height);
+    scroll-margin-top: calc(var(--header-height) + var(--space-2));
   }
 
   .reel-panel.is-playing > :not(.inline-player) {
@@ -507,38 +468,6 @@ const reels = [
     border-radius: var(--radius-lg);
   }
 
-  /* ---------- Variant: lightbox ---------- */
-  .reel-lightbox {
-    /* Widest 16:9 that fits both the width and the height (short landscape phones). */
-    /* Height budget: viewport minus outer margins, the bar and its gap. */
-    width: min(
-      100vw - 2 * var(--page-margin),
-      (100dvh - 2 * var(--page-margin) - var(--touch-target) - var(--space-1)) * 16 / 9,
-      1280px
-    );
-    max-width: none;
-    max-height: none;
-    /* Tailwind's preflight zeroes dialog margins; restore centering. */
-    margin: auto;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    overflow: visible;
-  }
-
-  .reel-lightbox::backdrop {
-    background: rgba(7, 7, 9, 0.9);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .lightbox-inner {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .player-close {
       transition: none;
@@ -546,9 +475,3 @@ const reels = [
   }
 </style>
 
-<style is:global>
-  /* No page scroll behind the open lightbox. */
-  html:has(.reel-lightbox[open]) {
-    overflow: hidden;
-  }
-</style>
