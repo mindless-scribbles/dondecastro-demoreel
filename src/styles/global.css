@@ -70,6 +70,16 @@
   --page-max: 1440px;
 
   --touch-target: 48px;
+
+  /* Sticky SiteHeader height, for sticky offsets below it. Mirrors
+     src/components/SiteHeader.astro: update both together. */
+  --header-height: 68px;
+}
+
+@media (hover: none) {
+  :root {
+    --header-height: 65px;
+  }
 }
 
 @media (min-width: 768px) {
@@ -77,6 +87,12 @@
     --grid-columns: 8;
     --page-margin: var(--space-4);
     --gutter: var(--space-3);
+  }
+}
+
+@media (min-width: 768px) and (hover: hover) {
+  :root {
+    --header-height: 97px;
   }
 }
 
