@@ -4,3 +4,14 @@ publish = "dist"
 
 [build.environment]
 NODE_VERSION = "20"
+
+# Retired journal entries: these reels are now the reel-panel buttons on the home page.
+[[redirects]]
+from = "/journal/character-fx-demo-reel"
+to = "/"
+status = 301
+
+[[redirects]]
+from = "/journal/mocap-avatar-way-of-water"
+to = "/"
+status = 301
