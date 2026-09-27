@@ -8,80 +8,82 @@ const archiveUpdated = "04.14.26";
 ---
 
 <BaseLayout title="Contact — Don De Castro">
-  <main class="min-h-screen flex flex-col p-6 md:p-12 relative z-10">
-    <SiteHeader />
+  <div class="contact-root relative z-10">
+    <SiteHeader sticky />
 
-    <div class="contact-strip">
-      <span>CONTACT_ARCHIVE // TRANSMISSION_OPEN</span>
-      <span>{archiveUpdated}</span>
-    </div>
+    <main class="page-container contact">
+      <div class="contact-strip">
+        <span>CONTACT_ARCHIVE // TRANSMISSION_OPEN</span>
+        <span>{archiveUpdated}</span>
+      </div>
 
-    <section class="contact-grid">
-      <form
-        class="contact-form"
-        name="contact"
-        method="POST"
-        data-netlify="true"
-        netlify-honeypot="bot-field"
-        action="/contact?success=1"
-      >
-        <input type="hidden" name="form-name" value="contact" />
-        <p class="hp-field">
-          <label>Don't fill this out: <input name="bot-field" /></label>
-        </p>
+      <section class="contact-grid">
+        <form
+          class="contact-form"
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          action="/contact?success=1"
+        >
+          <input type="hidden" name="form-name" value="contact" />
+          <p class="hp-field">
+            <label>Don't fill this out: <input name="bot-field" /></label>
+          </p>
 
-        {success && (
-          <p class="form-success">TRANSMISSION RECEIVED. THANK YOU.</p>
-        )}
+          {success && (
+            <p class="form-success">TRANSMISSION RECEIVED. THANK YOU.</p>
+          )}
 
-        <div class="form-group">
-          <label class="form-label" for="name">ID // NAME</label>
-          <input class="form-input" type="text" id="name" name="name" required placeholder="OPERATOR_01" />
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="name">ID // NAME</label>
+            <input class="form-input" type="text" id="name" name="name" required placeholder="OPERATOR_01" />
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="email">COORDINATES // EMAIL</label>
-          <input class="form-input" type="email" id="email" name="email" required placeholder="INPUT@SYSTEM.ARCHIVE" />
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="email">COORDINATES // EMAIL</label>
+            <input class="form-input" type="email" id="email" name="email" required placeholder="INPUT@SYSTEM.ARCHIVE" />
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="message">QUERY // MESSAGE</label>
-          <textarea class="form-input form-textarea" id="message" name="message" rows="5" required placeholder="INITIATING HANDSHAKE..."></textarea>
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="message">QUERY // MESSAGE</label>
+            <textarea class="form-input form-textarea" id="message" name="message" rows="5" required placeholder="INITIATING HANDSHAKE..."></textarea>
+          </div>
 
-        <button class="submit-btn" type="submit">
-          <span class="btn-fill" aria-hidden="true"></span>
-          <span class="submit-label">Transmit</span>
-        </button>
-      </form>
-
-      <aside class="contact-details">
-        <p>CURRENT_LOC: LOS ANGELES, CA</p>
-        <p>
-          EMAIL:
-          <button class="email-btn" type="button" data-email={email}>
-            <span>{email.toUpperCase()}</span>
-            <span class="copied-tip">EMAIL COPIED</span>
+          <button class="submit-btn" type="submit">
+            <span class="btn-fill" aria-hidden="true"></span>
+            <span class="submit-label">Transmit</span>
           </button>
-        </p>
-        <p>STATUS: <span class="status-dot" aria-hidden="true"></span> AVAILABLE FOR COLLABORATION</p>
-        <p>ARCHIVE_UPDATED: {archiveUpdated}</p>
+        </form>
 
-        <p class="details-heading">SOCIALS:</p>
-        <p>
-          <a href="https://www.linkedin.com/in/don-de-castro-7a97293" target="_blank" rel="noopener noreferrer">LINKEDIN.LOG</a>
-        </p>
-        <p>
-          <a href="https://www.youtube.com/@mindless_scribbles" target="_blank" rel="noopener noreferrer">YOUTUBE.MP4</a>
-        </p>
-      </aside>
-    </section>
+        <aside class="contact-details">
+          <p>CURRENT_LOC: LOS ANGELES, CA</p>
+          <p>
+            EMAIL:
+            <button class="email-btn" type="button" data-email={email}>
+              <span>{email.toUpperCase()}</span>
+              <span class="copied-tip">EMAIL COPIED</span>
+            </button>
+          </p>
+          <p>STATUS: <span class="status-dot" aria-hidden="true"></span> AVAILABLE FOR COLLABORATION</p>
+          <p>ARCHIVE_UPDATED: {archiveUpdated}</p>
 
-    <div class="contact-strip contact-strip-footer">
-      <span>END_TRANSMISSION</span>
-      <span>© 2026 DON DE CASTRO</span>
-    </div>
-  </main>
+          <p class="details-heading">SOCIALS:</p>
+          <p>
+            <a href="https://www.linkedin.com/in/don-de-castro-7a97293" target="_blank" rel="noopener noreferrer">LINKEDIN.LOG</a>
+          </p>
+          <p>
+            <a href="https://www.youtube.com/@mindless_scribbles" target="_blank" rel="noopener noreferrer">YOUTUBE.MP4</a>
+          </p>
+        </aside>
+      </section>
+
+      <div class="contact-strip contact-strip-footer">
+        <span>END_TRANSMISSION</span>
+        <span>© 2026 DON DE CASTRO</span>
+      </div>
+    </main>
+  </div>
 </BaseLayout>
 
 <script>
@@ -100,37 +102,65 @@ const archiveUpdated = "04.14.26";
   });
 </script>
 
+<style is:global>
+  body:has(.contact-root) .frame {
+    display: none;
+  }
+</style>
+
 <style>
+  .contact-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contact {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
   .contact-strip {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    gap: var(--space-1) var(--space-2);
     font-family: var(--font-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.15em;
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: rgba(244, 244, 245, 0.5);
-    padding: 1.5rem 0 1rem;
+    padding: var(--space-3) 0 var(--space-2);
   }
 
   .contact-strip-footer {
     margin-top: auto;
-    padding: 2rem 0 0.5rem;
+    padding: var(--space-4) 0 var(--space-3);
     color: rgba(244, 244, 245, 0.35);
   }
 
   .contact-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    padding: 2rem 0;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    padding: var(--space-4) 0;
     flex-grow: 1;
     align-content: center;
+  }
+
+  @media (min-width: 1024px) {
+    .contact-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+    }
   }
 
   .contact-form {
     display: flex;
     flex-direction: column;
-    gap: 1.75rem;
+    gap: var(--space-4);
   }
 
   .hp-field {
@@ -143,8 +173,8 @@ const archiveUpdated = "04.14.26";
   .form-group {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid rgba(244, 244, 245, 0.2);
-    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border-strong);
+    padding-bottom: var(--space-1);
     transition: border-color 0.3s ease;
   }
 
@@ -154,23 +184,26 @@ const archiveUpdated = "04.14.26";
 
   .form-label {
     font-family: var(--font-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.2em;
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
+    letter-spacing: var(--tracking-mini);
     text-transform: uppercase;
     color: rgba(244, 244, 245, 0.5);
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-1);
   }
 
+  /* 16px text: smaller input text makes iOS zoom on focus. */
   .form-input {
     background: transparent;
     border: none;
     outline: none;
     color: var(--color-text);
     font-family: var(--font-mono);
-    font-size: 0.875rem;
-    letter-spacing: 0.05em;
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
     width: 100%;
-    padding: 0.25rem 0;
+    min-height: var(--touch-target);
+    padding: var(--space-1) 0;
   }
 
   .form-input::placeholder {
@@ -179,69 +212,67 @@ const archiveUpdated = "04.14.26";
 
   .form-textarea {
     resize: vertical;
-    min-height: 6rem;
+    min-height: var(--space-12);
   }
 
   .form-success {
+    margin: 0;
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: var(--color-accent);
     border: 1px solid var(--color-accent);
-    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    padding: var(--space-2);
   }
 
+  /* Canonical button (STYLE_GUIDE §5): scaleX fill, not width. */
   .submit-btn {
     position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: fit-content;
-    margin-top: 0.5rem;
-    padding: 0.85rem 2rem;
-    border: 1px solid rgba(244, 244, 245, 0.3);
+    min-height: var(--touch-target);
+    margin-top: var(--space-1);
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
     background: transparent;
     color: var(--color-text);
     cursor: pointer;
-    overflow: hidden;
-    isolation: isolate;
     transition: border-color 0.3s ease;
-  }
-
-  .submit-btn:hover {
-    border-color: var(--color-accent);
   }
 
   .submit-label {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.25em;
+    letter-spacing: var(--tracking-mini);
   }
 
   .btn-fill {
     position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 0;
+    inset: 0;
     background: var(--color-accent);
     z-index: -1;
-    transition: width 0.3s ease;
-  }
-
-  .submit-btn:hover .btn-fill {
-    width: 100%;
+    transform: scaleX(var(--fill-scale, 0));
+    transform-origin: var(--fill-origin, left);
+    transition: transform 0.3s ease;
   }
 
   .contact-details {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    font-size: var(--text-mini);
+    line-height: var(--leading-body);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    line-height: 2;
     color: rgba(244, 244, 245, 0.85);
   }
 
@@ -249,61 +280,57 @@ const archiveUpdated = "04.14.26";
     margin: 0;
   }
 
-  .details-heading {
-    margin-top: 1.5rem !important;
+  .contact-details .details-heading {
+    margin-top: var(--space-3);
     color: rgba(244, 244, 245, 0.5);
   }
 
-  .contact-details a {
+  /* Links and the email button keep the 24px row but get a 48px tap target. */
+  .contact-details a,
+  .email-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    margin-block: calc((var(--leading-body) - var(--touch-target)) / 2);
     color: inherit;
     text-decoration: none;
     transition: color 0.3s ease;
   }
 
-  .contact-details a:hover {
-    color: var(--color-accent);
-  }
-
   .status-dot {
     display: inline-block;
-    width: 0.4rem;
-    height: 0.4rem;
+    width: var(--space-1);
+    height: var(--space-1);
     border-radius: 50%;
     background: var(--color-accent);
-    margin: 0 0.25rem 0 0.15rem;
+    margin: 0 var(--space-half);
     vertical-align: middle;
     box-shadow: 0 0 6px var(--color-accent);
   }
 
   .email-btn {
     position: relative;
-    display: inline-block;
     background: none;
     border: 0;
     padding: 0;
-    margin: 0;
     font: inherit;
     letter-spacing: inherit;
-    color: inherit;
     text-transform: uppercase;
     cursor: pointer;
-    transition: color 0.3s ease;
   }
 
-  .email-btn:hover {
-    color: var(--color-accent);
-  }
-
+  /* Chip: 10px is allowed for chips only. Sits above the address so it never overflows on phone. */
   .copied-tip {
     position: absolute;
-    left: calc(100% + 0.75rem);
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 0.625rem;
-    letter-spacing: 0.15em;
+    left: 0;
+    bottom: calc(100% - var(--space-1));
+    font-size: 10px;
+    line-height: var(--leading-mini);
+    letter-spacing: var(--tracking-label);
     color: var(--color-bg);
     background: var(--color-accent);
-    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    padding: var(--space-half) var(--space-1);
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
@@ -314,21 +341,27 @@ const archiveUpdated = "04.14.26";
     opacity: 1;
   }
 
-  @media (max-width: 900px) {
-    .contact-grid {
-      grid-template-columns: 1fr;
-      gap: 3rem;
+  @media (hover: hover) {
+    .submit-btn:hover {
+      --fill-scale: 1;
+      border-color: var(--color-accent);
+    }
+
+    /* §4: hover is the accent at 55%. */
+    .contact-details a:hover,
+    .email-btn:hover {
+      color: rgba(255, 51, 0, 0.55);
     }
   }
 
-  @media (max-width: 768px) {
-    .contact-strip {
-      font-size: 0.55rem;
-      letter-spacing: 0.1em;
-    }
-
-    .contact-details {
-      font-size: 0.7rem;
+  @media (prefers-reduced-motion: reduce) {
+    .form-group,
+    .submit-btn,
+    .btn-fill,
+    .contact-details a,
+    .email-btn,
+    .copied-tip {
+      transition: none;
     }
   }
 </style>
