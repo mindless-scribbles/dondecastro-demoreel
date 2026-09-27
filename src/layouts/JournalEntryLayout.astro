@@ -32,35 +32,36 @@ const { title, description, currentSlug } = Astro.props;
   }
 
   .journal-entry-root .entry-main .article-container p {
-    margin-bottom: 2rem;
-    font-size: 1rem;
+    margin: 0 0 var(--space-4);
+    font-size: var(--text-body);
     font-weight: 400;
-    line-height: 1.7;
-    color: #cccccc;
+    line-height: var(--leading-body);
+    color: rgba(244, 244, 245, 0.85);
     text-align: justify;
   }
 
   .journal-entry-root .dropcap {
     font-family: var(--font-serif);
     float: left;
-    font-size: 5rem;
-    line-height: 1;
-    margin-right: 1rem;
-    margin-top: 0.1rem;
+    font-size: var(--space-10);
+    line-height: var(--space-10);
+    margin-right: var(--space-2);
     color: var(--color-accent);
   }
 
   .journal-entry-root .inline-metadata {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-1);
     color: var(--color-accent);
     font-weight: 700;
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
+    letter-spacing: var(--tracking-label);
     border: 1px solid var(--color-accent);
-    padding: 0.05rem 0.4rem;
-    margin: 0 0.15rem;
+    border-radius: var(--radius-sm);
+    padding: 0 var(--space-1);
+    margin: 0 var(--space-half);
     vertical-align: middle;
     transform: translateY(-1px);
     font-family: var(--font-mono);
@@ -74,8 +75,9 @@ const { title, description, currentSlug } = Astro.props;
 
   .entry-shell {
     display: grid;
+    /* 320 = 40 × 8 */
     grid-template-columns: 320px 1fr;
-    min-height: calc(100vh - 3.5rem);
+    min-height: calc(100vh - var(--header-height));
     align-items: start;
   }
 

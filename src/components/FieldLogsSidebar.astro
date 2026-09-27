@@ -56,30 +56,42 @@ const numberFor = (id: string) => id.replace(/\[|\]/g, "");
 
 <style>
   .field-logs {
-    border-right: 1px solid rgba(244, 244, 245, 0.08);
-    padding: 2.5rem 2rem;
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-3) var(--page-margin) var(--space-4);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 2rem;
+    gap: var(--space-4);
     min-height: 100%;
   }
 
   @media (min-width: 1024px) {
     .field-logs {
       position: sticky;
-      top: 3.5rem;
-      height: calc(100vh - 3.5rem);
+      top: var(--header-height);
+      height: calc(100vh - var(--header-height));
+      min-height: 0;
+      overflow-y: auto;
+      border-bottom: none;
+      border-right: 1px solid var(--color-border);
+      padding: var(--space-5) var(--space-4);
     }
   }
 
   .brand {
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
     font-weight: 800;
-    letter-spacing: 0.05em;
+    letter-spacing: var(--tracking-label);
     color: var(--color-text);
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-2);
+  }
+
+  @media (min-width: 1024px) {
+    .brand {
+      margin-bottom: var(--space-3);
+    }
   }
 
   .index-list {
@@ -88,87 +100,92 @@ const numberFor = (id: string) => id.replace(/\[|\]/g, "");
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: var(--space-half);
+  }
+
+  /* One-line rows are 32px; links bleed 8px above and below for a 48px tap target. */
+  .index-item,
+  .index-link {
+    display: grid;
+    grid-template-columns: var(--space-5) 1fr auto;
+    align-items: start;
+    gap: var(--space-2);
+    padding-block: var(--space-1);
   }
 
   .index-item {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.04em;
-    display: grid;
-    grid-template-columns: 36px 1fr auto;
-    align-items: baseline;
-    gap: 0.75rem;
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
     color: var(--color-muted);
     transition: color 0.2s ease;
   }
 
+  .index-item:has(.index-link) {
+    display: flow-root;
+    padding-block: 0;
+  }
+
   .index-item .num {
     color: rgba(82, 82, 91, 0.75);
+    transition: color 0.2s ease;
   }
 
   .index-link {
-    display: contents;
+    padding-block: var(--space-2);
+    margin-block: calc(-1 * var(--space-1));
     color: inherit;
     text-decoration: none;
   }
 
-  .index-item:not(.current):not(.soon):hover {
-    color: var(--color-text);
+  @media (hover: hover) {
+    .index-link:hover {
+      color: var(--color-text);
+    }
+
+    .index-link:hover .num {
+      color: var(--color-accent);
+    }
   }
 
-  .index-item:not(.current):not(.soon):hover .num {
-    color: var(--color-accent);
+  @media (prefers-reduced-motion: reduce) {
+    .index-item,
+    .index-item .num {
+      transition: none;
+    }
   }
 
-  .index-item.current {
-    color: var(--color-accent);
-    cursor: default;
-  }
-
+  .index-item.current,
   .index-item.current .num {
     color: var(--color-accent);
+    cursor: default;
   }
 
-  .index-item.soon {
+  .index-item.soon,
+  .index-item.soon .num {
     color: rgba(82, 82, 91, 0.45);
     cursor: default;
   }
 
-  .index-item.soon .num {
-    color: rgba(82, 82, 91, 0.45);
-  }
-
+  /* Chip: 10px is allowed for chips only. */
   .soon-tag {
-    font-size: 0.55rem;
-    letter-spacing: 0.15em;
+    font-size: 10px;
+    /* minus the 1px borders so the row stays on the 8pt grid */
+    line-height: calc(var(--leading-mini) - 2px);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: rgba(82, 82, 91, 0.5);
-    padding: 0.05rem 0.3rem;
+    padding: 0 var(--space-1);
     border: 1px solid rgba(82, 82, 91, 0.3);
+    border-radius: var(--radius-sm);
   }
 
   .status-footer {
     font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
+    letter-spacing: var(--tracking-mini);
     color: var(--color-muted);
     text-transform: uppercase;
-  }
-
-  @media (max-width: 1023px) {
-    .field-logs {
-      border-right: none;
-      border-bottom: 1px solid rgba(244, 244, 245, 0.08);
-      padding: 1.5rem 1.5rem 2rem;
-    }
-
-    .brand {
-      margin-bottom: 1rem;
-    }
-
-    .index-list {
-      gap: 0.4rem;
-    }
   }
 </style>
