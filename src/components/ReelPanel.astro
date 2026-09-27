@@ -1,6 +1,15 @@
 ---
 // Reel preview panel: video placeholder, play button with reel sub-buttons, metadata chips.
 // In normal document flow; sizes from aspect-ratio, not viewport math.
+// Reels play on the page (YouTube embed), never in a new tab. The links keep their
+// YouTube hrefs so modifier-clicks and no-JS still work.
+// TEMP: two player variants for comparison, ?player=inline (in the panel) or the
+// default lightbox. Remove the loser once chosen.
+
+const reels = [
+  { id: "_6fQY8wwXQs", label: "Tech Anim" },
+  { id: "4ca-ywgyVdE", label: "Mocap / Anim" },
+];
 ---
 
 <section class="reel-panel group" aria-label="Demo reel">
@@ -15,14 +24,14 @@
         </svg>
       </button>
       <div class="sub-actions">
-        <a class="sub-btn" href="https://youtu.be/_6fQY8wwXQs" target="_blank" rel="noopener noreferrer">
-          <span class="btn-fill" aria-hidden="true"></span>
-          <span class="sub-label">Tech Anim</span>
-        </a>
-        <a class="sub-btn" href="https://youtu.be/4ca-ywgyVdE" target="_blank" rel="noopener noreferrer">
-          <span class="btn-fill" aria-hidden="true"></span>
-          <span class="sub-label">Mocap / Anim</span>
-        </a>
+        {
+          reels.map((reel) => (
+            <a class="sub-btn" href={`https://youtu.be/${reel.id}`} data-video-id={reel.id} data-title={reel.label}>
+              <span class="btn-fill" aria-hidden="true" />
+              <span class="sub-label">{reel.label}</span>
+            </a>
+          ))
+        }
       </div>
     </div>
   </div>
@@ -35,9 +44,119 @@
     </div>
     <span class="chip">Duration / 01:42</span>
   </div>
+
+  <!-- Variant: inline. The panel itself becomes the player. -->
+  <div class="inline-player" hidden>
+    <div class="player-bar">
+      <span class="chip now-playing">Now playing / <span class="now-title"></span></span>
+      <button class="player-close" type="button" aria-label="Close reel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </button>
+    </div>
+    <div class="player-frame"></div>
+  </div>
 </section>
 
+<!-- Variant: lightbox. -->
+<dialog class="reel-lightbox" aria-label="Demo reel">
+  <div class="player-bar">
+    <span class="chip now-playing">Now playing / <span class="now-title"></span></span>
+    <button class="player-close" type="button" aria-label="Close reel">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+  </div>
+  <div class="lightbox-inner">
+    <div class="player-frame"></div>
+  </div>
+</dialog>
+
 <script>
+  // ---------- Reel playback ----------
+  const variant = new URLSearchParams(location.search).get("player") === "inline" ? "inline" : "lightbox";
+
+  const makeIframe = (id: string, title: string) => {
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`;
+    iframe.title = `${title} demo reel`;
+    iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    iframe.allowFullscreen = true;
+    return iframe;
+  };
+
+  document.querySelectorAll<HTMLElement>(".reel-panel").forEach((panel) => {
+    const inline = panel.querySelector<HTMLElement>(".inline-player");
+    const inlineFrame = inline?.querySelector<HTMLElement>(".player-frame");
+    const dialog = panel.nextElementSibling as HTMLDialogElement | null;
+    const dialogFrame = dialog?.querySelector<HTMLElement>(".player-frame");
+    let opener: HTMLElement | null = null;
+
+    const closeInline = () => {
+      if (!inline || !inlineFrame) return;
+      inlineFrame.replaceChildren();
+      inline.hidden = true;
+      panel.classList.remove("is-playing");
+      opener?.focus();
+    };
+
+    const play = (btn: HTMLElement) => {
+      const id = btn.dataset.videoId;
+      if (!id) return;
+      opener = btn;
+      const title = btn.dataset.title ?? "";
+      const iframe = makeIframe(id, title);
+      panel.querySelectorAll(".now-title").forEach((el) => (el.textContent = title));
+      dialog?.querySelectorAll(".now-title").forEach((el) => (el.textContent = title));
+
+      if (variant === "inline" && inline && inlineFrame) {
+        inlineFrame.replaceChildren(iframe);
+        inline.hidden = false;
+        panel.classList.add("is-playing");
+        inline.querySelector<HTMLElement>(".player-close")?.focus({ preventScroll: true });
+        panel.scrollIntoView({
+          block: "start",
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
+      } else if (dialog && dialogFrame) {
+        dialogFrame.replaceChildren(iframe);
+        dialog.showModal();
+      }
+    };
+
+    panel.querySelectorAll<HTMLAnchorElement>(".sub-btn[data-video-id]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        // Let Cmd/Ctrl/Shift/middle-click still open YouTube.
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        e.preventDefault();
+        play(btn);
+      });
+    });
+
+    inline?.querySelector(".player-close")?.addEventListener("click", closeInline);
+    panel.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && panel.classList.contains("is-playing")) closeInline();
+    });
+
+    if (dialog && dialogFrame) {
+      // Removing the iframe is what stops playback. Idempotent, so every close path can call it.
+      const closeLightbox = () => {
+        if (dialog.open) dialog.close();
+        if (dialogFrame.childElementCount) {
+          dialogFrame.replaceChildren();
+          opener?.focus();
+        }
+      };
+      dialog.querySelector(".player-close")?.addEventListener("click", closeLightbox);
+      // Tap on the dimmed backdrop (the dialog box itself, outside the player) closes.
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) closeLightbox();
+      });
+      // Esc: "cancel" fires immediately; "close" is a queued fallback for any other close path.
+      dialog.addEventListener("cancel", closeLightbox);
+      dialog.addEventListener("close", closeLightbox);
+    }
+  });
+
+  // ---------- Sub-button fill ----------
   document.querySelectorAll<HTMLElement>(".play-actions").forEach((wrapper) => {
     const subActions = wrapper.querySelector<HTMLElement>(".sub-actions");
     const subBtns = Array.from(wrapper.querySelectorAll<HTMLElement>(".sub-btn"));
@@ -299,5 +418,137 @@
     .rec {
       animation: none;
     }
+  }
+
+  /* ---------- Player (shared) ---------- */
+  .player-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+
+  .player-frame :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  /* Bar above the video: title chip + close. Kept off the video so it never covers YouTube's controls. */
+  .player-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-1);
+  }
+
+  .player-close {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--touch-target);
+    height: var(--touch-target);
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 50%;
+    background: rgba(7, 7, 9, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+
+  .player-close svg {
+    width: var(--space-2);
+    height: var(--space-2);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  @media (hover: hover) {
+    .player-close:hover {
+      border-color: var(--color-accent);
+    }
+  }
+
+  /* ---------- Variant: inline ---------- */
+  /* While playing, the panel sizes to bar + 16:9 video at every width. */
+  .reel-panel.is-playing {
+    aspect-ratio: auto;
+    /* Never taller than the space under the sticky header: cap width from the height. */
+    max-width: min(
+      100%,
+      (100dvh - var(--header-height) - var(--touch-target) - 3 * var(--space-1)) * 16 / 9 + 2 * var(--space-1)
+    );
+    margin-inline: auto;
+    padding: var(--space-1);
+    background: var(--color-surface);
+    scroll-margin-top: var(--header-height);
+  }
+
+  .reel-panel.is-playing > :not(.inline-player) {
+    display: none;
+  }
+
+  .inline-player[hidden] {
+    display: none;
+  }
+
+  .inline-player .player-frame {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  /* ---------- Variant: lightbox ---------- */
+  .reel-lightbox {
+    /* Widest 16:9 that fits both the width and the height (short landscape phones). */
+    /* Height budget: viewport minus outer margins, the bar and its gap. */
+    width: min(
+      100vw - 2 * var(--page-margin),
+      (100dvh - 2 * var(--page-margin) - var(--touch-target) - var(--space-1)) * 16 / 9,
+      1280px
+    );
+    max-width: none;
+    max-height: none;
+    /* Tailwind's preflight zeroes dialog margins; restore centering. */
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .reel-lightbox::backdrop {
+    background: rgba(7, 7, 9, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .lightbox-inner {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .player-close {
+      transition: none;
+    }
+  }
+</style>
+
+<style is:global>
+  /* No page scroll behind the open lightbox. */
+  html:has(.reel-lightbox[open]) {
+    overflow: hidden;
   }
 </style>
