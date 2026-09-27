@@ -52,10 +52,18 @@ import { journalEntries } from "../data/journalEntries";
     margin: 0;
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: var(--text-heading);
-    line-height: var(--leading-heading);
+    /* Phone: body size so it stays under the one-line hero name (~24px there). */
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
     letter-spacing: -0.02em;
     text-transform: uppercase;
+  }
+
+  @media (min-width: 768px) {
+    .section-title {
+      font-size: var(--text-heading);
+      line-height: var(--leading-heading);
+    }
   }
 
   .section-meta {
