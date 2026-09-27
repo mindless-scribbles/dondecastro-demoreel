@@ -36,13 +36,56 @@ const { title, description, currentSlug } = Astro.props;
     text-align: justify;
   }
 
-  .journal-entry-root .dropcap {
+  /* Article body is Markdown (src/content/journal), so these can't be scoped. */
+  .journal-entry-root .content-body > p:first-of-type::first-letter {
     font-family: var(--font-serif);
     float: left;
     font-size: var(--space-10);
     line-height: var(--space-10);
     margin-right: var(--space-2);
     color: var(--color-accent);
+  }
+
+  .journal-entry-root .content-body a {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border-strong);
+    text-underline-offset: 3px;
+    transition: color 0.2s ease;
+  }
+
+  @media (hover: hover) {
+    .journal-entry-root .content-body a:hover {
+      color: rgba(255, 51, 0, 0.55);
+    }
+  }
+
+  .journal-entry-root .content-body blockquote {
+    margin: var(--space-6) 0;
+    padding-left: var(--space-3);
+    border-left: 2px solid var(--color-accent);
+  }
+
+  .journal-entry-root .entry-main .article-container blockquote p {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    font-style: italic;
+    line-height: var(--leading-title);
+    text-align: left;
+    color: var(--color-text);
+  }
+
+  @media (min-width: 768px) {
+    .journal-entry-root .content-body blockquote {
+      margin-block: var(--space-8);
+      padding-left: var(--space-4);
+    }
+
+    .journal-entry-root .entry-main .article-container blockquote p {
+      font-size: var(--text-heading);
+      line-height: var(--leading-heading);
+    }
   }
 
   .journal-entry-root .inline-metadata {

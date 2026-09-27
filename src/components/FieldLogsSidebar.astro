@@ -1,11 +1,12 @@
 ---
-import { journalEntries } from "../data/journalEntries";
+import { getJournal } from "../lib/journal";
 
 interface Props {
   currentSlug: string;
 }
 
 const { currentSlug } = Astro.props;
+const entries = await getJournal();
 
 const numberFor = (id: string) => id.replace(/\[|\]/g, "");
 ---
@@ -15,12 +16,10 @@ const numberFor = (id: string) => id.replace(/\[|\]/g, "");
     <div class="brand">FIELD LOGS</div>
     <ol class="index-list">
       {
-        journalEntries.map((e) => {
+        entries.map((e) => {
           const num = numberFor(e.id);
-          const isCurrent = e.slug === currentSlug;
-          const isLinked = e.hasPage && !isCurrent;
 
-          if (isCurrent) {
+          if (e.slug === currentSlug) {
             return (
               <li class="index-item current" aria-current="page">
                 <span class="num">{num}</span>
@@ -29,22 +28,12 @@ const numberFor = (id: string) => id.replace(/\[|\]/g, "");
             );
           }
 
-          if (isLinked) {
-            return (
-              <li class="index-item">
-                <a class="index-link" href={`/journal/${e.slug}`}>
-                  <span class="num">{num}</span>
-                  <span class="title">{e.title}</span>
-                </a>
-              </li>
-            );
-          }
-
           return (
-            <li class="index-item soon" aria-disabled="true">
-              <span class="num">{num}</span>
-              <span class="title">{e.title}</span>
-              <span class="soon-tag">soon</span>
+            <li class="index-item">
+              <a class="index-link" href={`/journal/${e.slug}`}>
+                <span class="num">{num}</span>
+                <span class="title">{e.title}</span>
+              </a>
             </li>
           );
         })
@@ -159,25 +148,6 @@ const numberFor = (id: string) => id.replace(/\[|\]/g, "");
   .index-item.current .num {
     color: var(--color-accent);
     cursor: default;
-  }
-
-  .index-item.soon,
-  .index-item.soon .num {
-    color: rgba(82, 82, 91, 0.45);
-    cursor: default;
-  }
-
-  /* Chip: 10px is allowed for chips only. */
-  .soon-tag {
-    font-size: 10px;
-    /* minus the 1px borders so the row stays on the 8pt grid */
-    line-height: calc(var(--leading-mini) - 2px);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: rgba(82, 82, 91, 0.5);
-    padding: 0 var(--space-1);
-    border: 1px solid rgba(82, 82, 91, 0.3);
-    border-radius: var(--radius-sm);
   }
 
   .status-footer {

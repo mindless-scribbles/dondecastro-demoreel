@@ -1,23 +1,27 @@
 ---
+import { Image } from "astro:assets";
+import { render } from "astro:content";
 import JournalEntryLayout from "../../layouts/JournalEntryLayout.astro";
-import { journalEntries, type JournalEntry } from "../../data/journalEntries";
+import { getJournal, type JournalItem } from "../../lib/journal";
 
 export async function getStaticPaths() {
-  return journalEntries
-    .filter((e) => e.hasPage)
-    .map((e) => ({ params: { slug: e.slug }, props: { entry: e } }));
+  const entries = await getJournal();
+  // Newest first; "proceed" goes to the next older entry and wraps to the newest.
+  return entries.map((entry, i) => ({
+    params: { slug: entry.slug },
+    props: { entry, next: entries[(i + 1) % entries.length] },
+  }));
 }
 
 interface Props {
-  entry: JournalEntry;
+  entry: JournalItem;
+  next: JournalItem;
 }
 
-const { entry } = Astro.props;
-
-const built = journalEntries.filter((e) => e.hasPage);
-const currentIdx = built.findIndex((e) => e.slug === entry.slug);
-const nextEntry = built[(currentIdx + 1) % built.length];
-const nextNumber = nextEntry.id.replace(/\[|\]/g, "");
+const { entry, next } = Astro.props;
+const { data } = entry.entry;
+const { Content } = await render(entry.entry);
+const nextNumber = next.id.replace(/\[|\]/g, "");
 ---
 
 <JournalEntryLayout
@@ -26,11 +30,7 @@ const nextNumber = nextEntry.id.replace(/\[|\]/g, "");
   currentSlug={entry.slug}
 >
   <header class="hero">
-    <img
-      src={entry.heroImage ?? entry.image}
-      alt={entry.title}
-      class="hero-image"
-    />
+    <img src={entry.thumb} alt="" class="hero-image" />
     <div class="hero-overlay">
       <h1 class="headline">
         {entry.title}{entry.subtitle && <>: <em>{entry.subtitle}</em></>}
@@ -40,65 +40,56 @@ const nextNumber = nextEntry.id.replace(/\[|\]/g, "");
 
   <article class="page-container article-container">
     <div class="article-meta">
-      <span>Year: <b>{entry.year}</b></span>
-      <span>Format: <b>{entry.format}</b></span>
-      <span>Category: <b>{entry.category}</b></span>
+      <span>Year: <b>{entry.date.getUTCFullYear()}</b></span>
+      <span>Format: <b>{data.format}</b></span>
+      <span>Category: <b>{data.category}</b></span>
       <span>Ref: <b>{entry.id}</b></span>
     </div>
 
     <section class="content-body">
       {
-        entry.article?.map((block) => {
-          if (block.type === "p") {
-            if (block.dropcap) {
-              const firstChar = block.html.charAt(0);
-              const rest = block.html.slice(1);
-              return (
-                <p>
-                  <span class="dropcap">{firstChar}</span>
-                  <Fragment set:html={rest} />
-                </p>
-              );
-            }
-            return (
-              <p>
-                <Fragment set:html={block.html} />
-              </p>
-            );
-          }
-          if (block.type === "quote") {
-            return <div class="quote-block">{block.text}</div>;
-          }
-          if (block.type === "video") {
-            return (
-              <figure class="article-video">
-                <div class="video-frame">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${block.videoId}`}
-                    title={block.title ?? "Embedded video"}
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
-                  />
-                </div>
-                {block.caption && <figcaption class="caption">{block.caption}</figcaption>}
-              </figure>
-            );
-          }
-          return (
-            <>
-              <img src={block.src} alt={block.alt} class="sub-image" />
-              <div class="caption">{block.caption}</div>
-            </>
-          );
-        })
+        data.youtube && (
+          <figure class="article-video">
+            <div class="video-frame">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${data.youtube}`}
+                title={`${entry.title} video`}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              />
+            </div>
+            {data.source && (
+              <figcaption class="caption">
+                <a href={data.source.url} target="_blank" rel="noopener noreferrer">
+                  Watch on {data.source.platform === "youtube" ? "YouTube" : "Instagram"}
+                </a>
+              </figcaption>
+            )}
+          </figure>
+        )
       }
+      {
+        data.images.map((img) => (
+          <Image src={img.src} alt={img.alt} widths={[720, 1440]} sizes="(min-width: 768px) 720px, 100vw" class="photo" />
+        ))
+      }
+      {
+        !data.youtube && data.source && (
+          <div class="caption">
+            <a href={data.source.url} target="_blank" rel="noopener noreferrer">
+              View on {data.source.platform === "youtube" ? "YouTube" : "Instagram"}
+            </a>
+          </div>
+        )
+      }
+      <Content />
     </section>
   </article>
 
   <footer class="page-container entry-footer">
     <div>© 2026 DON DE CASTRO — FIELD LOGS</div>
-    <a class="proceed" href={`/journal/${nextEntry.slug}`}>
+    <a class="proceed" href={`/journal/${next.slug}`}>
       PROCEED TO PROJECT [{nextNumber}] →
     </a>
   </footer>
@@ -177,26 +168,24 @@ const nextNumber = nextEntry.id.replace(/\[|\]/g, "");
     font-weight: 700;
   }
 
-  .quote-block {
-    font-family: var(--font-serif);
-    font-size: var(--text-title);
-    font-style: italic;
-    font-weight: 400;
-    line-height: var(--leading-title);
-    border-left: 2px solid var(--color-accent);
-    padding-left: var(--space-3);
-    margin: var(--space-6) 0;
-    color: var(--color-text);
-  }
-
-  .sub-image {
+  .photo {
+    display: block;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    filter: grayscale(100%);
+    height: auto;
+    margin: 0 0 var(--space-3);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    display: block;
+  }
+
+  .caption a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  @media (hover: hover) {
+    .caption a:hover {
+      color: rgba(255, 51, 0, 0.55);
+    }
   }
 
   .article-video {
@@ -288,11 +277,5 @@ const nextNumber = nextEntry.id.replace(/\[|\]/g, "");
       gap: var(--space-4);
     }
 
-    .quote-block {
-      font-size: var(--text-heading);
-      line-height: var(--leading-heading);
-      padding-left: var(--space-4);
-      margin-block: var(--space-8);
-    }
   }
 </style>

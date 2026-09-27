@@ -4,7 +4,9 @@ import SiteHeader from "../components/SiteHeader.astro";
 import ReelPanel from "../components/ReelPanel.astro";
 import HomeHero from "../components/HomeHero.astro";
 import JournalGrid from "../components/JournalGrid.astro";
-import { journalEntries } from "../data/journalEntries";
+import { getJournal } from "../lib/journal";
+
+const journalEntries = await getJournal();
 ---
 
 <BaseLayout>
