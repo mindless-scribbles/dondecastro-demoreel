@@ -92,17 +92,20 @@ Tracking: `--tracking-label` 0.1em, `--tracking-mini` 0.2em. 10px mono is allowe
 
 - Wrap page content in `.page-container` (max width 1440, side padding `--page-margin`).
 - Scoped `<style>` blocks can't read vars in media queries, so write the literal breakpoints: `768px`, `1024px`, `1280px` (mobile-first `min-width`; use `max-width: 767px` for phone-only rules).
+- Sticky elements below the header offset by `--header-height` (68 phone, 65 touch, 97 pointer from 768). It mirrors `SiteHeader.astro`, so change both together. Canonical use: `FieldLogsSidebar.astro`.
 - **Never use `orientation` media queries.** Size things with `aspect-ratio` and the breakpoints above so iPad portrait/landscape follow the same rules as everything else.
 
 ### Interaction rules
-- Tap targets are at least `--touch-target` (48px).
+- Tap targets are at least `--touch-target` (48px). For links inside a tighter text row, keep the row height and bleed the target with negative block margins, e.g. `min-height: var(--touch-target); margin-block: calc((var(--leading-body) - var(--touch-target)) / 2)` (contact details, Field Logs sidebar).
 - Hover effects go inside `@media (hover: hover)`. Anything revealed on hover must be visible by default on `hover: none` (e.g. the reel sub-buttons, thumbnail color).
 - `body` uses `overflow-x: clip`, not `hidden`. `hidden` turns body into a scroll container and breaks `position: sticky`.
 
 ### Page rhythm
 - Home: `--space-8` between sections on phone, `--space-12` from 768 up.
 - Section heading row: Syne heading + mono meta, `--space-2` padding and hairline underneath, `--space-3` to content.
-- Prose container stays `max-width: 68ch` (`MarkdownLayout.astro`).
+- Prose container stays `max-width: 68ch` (`MarkdownLayout.astro`). From 768 up it sits on a `--color-surface` card (`--radius-lg`, `--space-6` padding); phone stays open for width.
+- Journal entry reading column: 720px inside `.page-container` (`journal/[slug].astro`). Video and image blocks use `--radius-lg`.
+- **Exception:** journal entry heroes stay grayscale at 70% opacity on every device. This is a deliberate editorial look, not a hover effect, so it doesn't follow the color-on-touch rule for cards.
 
 ### Cards (canonical: `src/components/JournalCard.astro`, grid: `JournalGrid.astro`)
 - Card: `--color-surface`, `--radius-lg`, 1px `--color-border`, `--space-1` padding around a `--radius-md` thumbnail, `--space-2` to the meta block.
@@ -114,7 +117,7 @@ Tracking: `--tracking-label` 0.1em, `--tracking-mini` 0.2em. 10px mono is allowe
 
 - Base: no underline. Color is either `inherit` (in prose) or `--color-muted` (in nav and chrome).
 - Hover: color transitions to `rgba(255, 51, 0, 0.55)` over `0.2`–`0.3s ease`. Not the full accent — the 55% opacity is intentional and softer.
-- Canonical: `src/layouts/MarkdownLayout.astro:117–119`, `src/pages/contact.astro:257–265`, nav links in `src/components/SiteHeader.astro:106–120`.
+- Canonical: prose links in `src/layouts/MarkdownLayout.astro`, contact detail links in `src/pages/contact.astro`, nav links in `src/components/SiteHeader.astro`.
 
 ## 5. Buttons — and the sub-button fill animation
 
@@ -134,38 +137,39 @@ Defined in `src/components/ReelPanel.astro` (the `<script>` and `.btn-fill`).
 - On `pointerenter` of a sibling sub-button, JS compares `getBoundingClientRect().left` of the incoming vs. the currently-active button. If moving right, the previous button fills out to the right (scale 0) and the new one fills in from the left (scale 1). Moving left reverses both origins.
 - On `pointerleave` of the container, the active button collapses back left.
 
-**Use this exact pattern for any new sub-button row.** Do not animate `width` for the same effect — that variant exists in `src/pages/contact.astro:224–237` and is flagged as the one to reconcile when it's next touched.
+**Use this exact pattern for any new sub-button row.** Do not animate `width` for the same effect. Single buttons (contact submit, resume download) use the same `.btn-fill` and just set `--fill-scale: 1` on `:hover` inside `@media (hover: hover)`; no JS needed.
 
 ## 6. Header & nav
 
 Canonical: `src/components/SiteHeader.astro`.
 - Brand: flex column, Playfair, weight 600 upright line + weight 400 italic line with `-webkit-text-stroke`.
 - Nav: row with `--space-2` gap on phone and all touch devices (48px tap height); stacked right-aligned column with `--space-1` gap on pointer devices from 768 up.
-- Sticky variant: translucent bg with blur, hairline bottom border. Home, journal and entry pages use it.
+- Sticky variant: translucent bg with blur, hairline bottom border. Every page uses it.
 - Nav items: Space Mono uppercase, 10px phone / `--text-mini` from 768, color `#71717a`, hover `rgba(255, 51, 0, 0.55)`.
 - The Journal link points at `/#journal` (the home page section); `/journal` stays as the full archive.
 
 ## 7. Forms
 
-Canonical: `src/pages/contact.astro:143–238`.
-- Vertical stack, `gap: 2rem` between fields (`contact.astro:124`).
-- Labels: small Space Mono uppercase, muted.
-- Inputs & textareas: transparent background, **bottom border only** (no box), border transitions to `--color-accent` on `:focus`.
+Canonical: `src/pages/contact.astro`.
+- Vertical stack, `--space-4` between fields.
+- Labels: `--text-mini` Space Mono uppercase, `--tracking-mini`, muted.
+- Inputs & textareas: transparent background, **bottom border only** (no box, `--color-border-strong`), border transitions to `--color-accent` on `:focus-within`. Input text is `--text-body` (16px; smaller makes iOS zoom on focus), 48px min height.
 - No placeholder-as-label. Use explicit `<label>`.
 - Success message: bordered accent box.
 
 ## 8. Prose (MDX / markdown)
 
-All prose styling lives in `src/layouts/MarkdownLayout.astro:77–161`. When authoring `.mdx` blog posts or `.md` pages, **do not** redefine heading, link, or list styles inline — inherit from the layout. If a post needs something unusual (e.g. a full-bleed image or an interactive canvas), scope the override to that one block; don't override prose defaults globally.
+All prose styling lives in `src/layouts/MarkdownLayout.astro`. When authoring `.mdx` blog posts or `.md` pages, **do not** redefine heading, link, or list styles inline — inherit from the layout. If a post needs something unusual (e.g. a full-bleed image or an interactive canvas), scope the override to that one block; don't override prose defaults globally.
 
 ## 9. Known inconsistencies — do not propagate
 
 When a template matches the non-canonical variant, rewrite it to the canonical one.
 
-- **Button fill animation:** hero/reel use `transform: scaleX` with `transform-origin` (canonical). `contact.astro:224–237` animates `width` instead. Prefer `scaleX`.
-- **Label font-size breakpoints:** hero, reel and journal now use the §3 type scale. Contact strips still step `0.625rem → 0.55rem`; move them to `--text-mini` when next touched.
-- **Header padding:** resolved: `SiteHeader.astro` now uses `--space-2` / `--page-margin`.
-- **Pages not yet on tokens:** `contact.astro`, `MarkdownLayout.astro`, `JournalEntryLayout.astro`, `FieldLogsSidebar.astro` (its `top: 3.5rem` assumes the header height) still use raw rem values. Convert them to tokens when next touched.
+All pages are on the §3 tokens as of 2026-09-27, and the fixed `.frame` overlay has been removed from `BaseLayout.astro`. Remaining known off-token values:
+
+- `JournalCard.astro`: `.title` 20px, tag color `#a1a1aa`, hover tint `rgba(255, 51, 0, 0.12)`.
+- `SiteHeader.astro`: brand sizes 28/36px and 9/10px sub-line; nav links 10px on phone and 16px tall on pointer devices (touch gets 48px).
+- Off-white text at partial opacity (`rgba(244, 244, 245, 0.85 / 0.5 / 0.35)`) and muted at partial opacity have no tokens yet.
 
 ## 10. Stale intent docs (out of scope here)
 
