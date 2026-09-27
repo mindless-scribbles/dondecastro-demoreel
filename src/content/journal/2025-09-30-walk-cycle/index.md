@@ -11,4 +11,4 @@ source:
   url: https://www.instagram.com/mindless_scribbles/
 ---
 
-#animation #maya #art #walkcycle Has anyone ever actually beat this game at the arcades? I could never figure out how to play it. lol.
+Has anyone ever actually beat this game at the arcades? I could never figure out how to play it. lol.

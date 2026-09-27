@@ -11,7 +11,7 @@ source:
   url: https://www.instagram.com/mindless_scribbles/
 ---
 
-Finding inspiration, sketching it, looking for those golden poses in the vidref. Im still like a little kid after putting it all together because there’s nothing ever quite like seeing your drawings move. #animation #art #bluepencilsketch #toonsquid
+Finding inspiration, sketching it, looking for those golden poses in the vidref. Im still like a little kid after putting it all together because there’s nothing ever quite like seeing your drawings move.
 
 I have been using ToonSquid on my iPad to do these breakdowns instead of going straight to my computer. It’s a fun and faster way to explore motion studies like these, then I go onto my computer with a better understanding of the motion
 

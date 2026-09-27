@@ -4,7 +4,7 @@
 // Reads your_instagram_activity/media/posts_1.html and reels.html from an unzipped export
 // folder, or straight from the .zip (only those files and the post/reel media are extracted).
 // Each picked post becomes src/content/journal/<date>-<slug>/index.md with its photos or
-// clip (plus a poster frame via ffmpeg) copied beside it and the caption as the body.
+// clip (plus a poster frame via ffmpeg) copied beside it and the caption (minus hashtags) as the body.
 //
 // Usage:
 //   node scripts/journal-from-instagram.mjs <export.zip|folder> --list
@@ -91,9 +91,12 @@ function parseItems(root) {
 // ---------- Caption -> Markdown ----------
 const escapeMd = (s) => s.replace(/([\\`*_[\]<>])/g, "\\$1");
 
-/** One caption line: @handles become profile links, everything else is escaped. */
+/** Hashtags (and anything glued to them, like an emoji) are dropped from captions. */
+const stripHashtags = (line) => line.replace(/(^|\s)#\S+/g, "$1").replace(/\s+([.,!?])/g, "$1");
+
+/** One caption line: hashtags dropped, @handles become profile links, everything else escaped. */
 function lineToMarkdown(line) {
-  return line
+  return stripHashtags(line)
     .trim()
     .replace(/\s{2,}/g, " ")
     .split(/(@[\w.]*\w)/)

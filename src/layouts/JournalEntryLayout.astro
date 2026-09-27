@@ -10,11 +10,17 @@ interface Props {
 }
 
 const { title, description, currentSlug } = Astro.props;
+
+const navItems = [
+  { label: "Home", href: "/" },
+  { label: "Expertise", href: "/expertise" },
+  { label: "Contact", href: "/contact" },
+];
 ---
 
 <BaseLayout title={title} description={description}>
   <div class="journal-entry-root relative z-10">
-    <SiteHeader sticky />
+    <SiteHeader navItems={navItems} sticky />
 
     <div class="entry-shell">
       <FieldLogsSidebar currentSlug={currentSlug} />
