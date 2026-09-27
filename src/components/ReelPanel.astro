@@ -1,13 +1,19 @@
 ---
-// Reel preview panel — video placeholder + animated scanline, play button, metadata strips.
-// Adapted from the Lumo cinematic-production template, stripped of the custom cursor
-// and burst-canvas layers so it sits cleanly inside the existing BaseLayout.
+// Reel preview panel: video placeholder, play button with reel sub-buttons, metadata chips.
+// In normal document flow; sizes from aspect-ratio, not viewport math.
+// Reels play inside the panel (YouTube embed), never in a new tab. The links keep
+// their YouTube hrefs so modifier-clicks and no-JS still work.
+
+const reels = [
+  { id: "_6fQY8wwXQs", label: "Tech Anim" },
+  { id: "4ca-ywgyVdE", label: "Mocap / Anim" },
+];
 ---
 
-<section class="reel-panel overflow-hidden border border-white/10 group">
-  <div class="video-placeholder absolute inset-0 opacity-[0.35] transition-transform duration-700 group-hover:scale-105" aria-hidden="true"></div>
+<section class="reel-panel group" aria-label="Demo reel">
+  <div class="video-placeholder" aria-hidden="true"></div>
 
-  <div class="absolute inset-0 flex items-center justify-center z-20">
+  <div class="reel-center">
     <div class="play-actions">
       <button class="play-btn" type="button" aria-label="Play reel">
         <span class="play-label">Play Reel</span>
@@ -16,146 +22,284 @@
         </svg>
       </button>
       <div class="sub-actions">
-        <a class="sub-btn" href="https://youtu.be/_6fQY8wwXQs" target="_blank" rel="noopener noreferrer">
-          <span class="btn-fill" aria-hidden="true"></span>
-          <span class="sub-label">Tech Anim</span>
-        </a>
-        <a class="sub-btn" href="https://youtu.be/4ca-ywgyVdE" target="_blank" rel="noopener noreferrer">
-          <span class="btn-fill" aria-hidden="true"></span>
-          <span class="sub-label">Mocap / Anim</span>
-        </a>
+        {
+          reels.map((reel) => (
+            <a class="sub-btn" href={`https://youtu.be/${reel.id}`} data-video-id={reel.id} data-title={reel.label}>
+              <span class="btn-fill" aria-hidden="true" />
+              <span class="sub-label">{reel.label}</span>
+            </a>
+          ))
+        }
       </div>
-    </div>
-    <div class="hero-overlay">
-      <h1 class="overlay-title">Don De Castro</h1>
-      <p class="overlay-tagline">
-        Technical Animator &amp; Motion Edit Supervisor.<br />
-        Feature film, AAA games, virtual production.
-      </p>
     </div>
   </div>
 
-  <div class="meta-bottom">
-    <span>Res: 4K 23.98fps</span>
-    <span>Codec: RAW.001</span>
-    <span class="rec">Rec ●</span>
+  <div class="meta">
+    <div class="chips">
+      <span class="chip">Res: 4K 23.98fps</span>
+      <span class="chip chip-optional">Codec: RAW.001</span>
+      <span class="chip rec">Rec ●</span>
+    </div>
+    <span class="chip">Duration / 01:42</span>
   </div>
-  <div class="meta-bottom-right">Duration / 01:42</div>
+
+  <!-- The panel itself becomes the player. -->
+  <div class="inline-player" hidden>
+    <div class="player-bar">
+      <span class="chip now-playing">Now playing / <span class="now-title"></span></span>
+      <button class="player-close" type="button" aria-label="Close reel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </button>
+    </div>
+    <div class="player-frame"></div>
+  </div>
 </section>
+
+
+<script>
+  // ---------- Reel playback ----------
+  const makeIframe = (id: string, title: string) => {
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`;
+    iframe.title = `${title} demo reel`;
+    iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    iframe.allowFullscreen = true;
+    return iframe;
+  };
+
+  document.querySelectorAll<HTMLElement>(".reel-panel").forEach((panel) => {
+    const inline = panel.querySelector<HTMLElement>(".inline-player");
+    const inlineFrame = inline?.querySelector<HTMLElement>(".player-frame");
+    let opener: HTMLElement | null = null;
+
+    const closeInline = () => {
+      if (!inline || !inlineFrame) return;
+      inlineFrame.replaceChildren();
+      inline.hidden = true;
+      panel.classList.remove("is-playing");
+      opener?.focus();
+    };
+
+    const play = (btn: HTMLElement) => {
+      const id = btn.dataset.videoId;
+      if (!id || !inline || !inlineFrame) return;
+      opener = btn;
+      const title = btn.dataset.title ?? "";
+      const iframe = makeIframe(id, title);
+      panel.querySelectorAll(".now-title").forEach((el) => (el.textContent = title));
+
+      inlineFrame.replaceChildren(iframe);
+      inline.hidden = false;
+      panel.classList.add("is-playing");
+      inline.querySelector<HTMLElement>(".player-close")?.focus({ preventScroll: true });
+      // Lands --space-2 below the header (scroll-margin-top), which is where the panel
+      // already sits at the top of the page, so there it doesn't move.
+      panel.scrollIntoView({
+        block: "start",
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      });
+    };
+
+    panel.querySelectorAll<HTMLAnchorElement>(".sub-btn[data-video-id]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        // Let Cmd/Ctrl/Shift/middle-click still open YouTube.
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        e.preventDefault();
+        play(btn);
+      });
+    });
+
+    inline?.querySelector(".player-close")?.addEventListener("click", closeInline);
+    panel.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && panel.classList.contains("is-playing")) closeInline();
+    });
+  });
+
+  // ---------- Sub-button fill ----------
+  document.querySelectorAll<HTMLElement>(".play-actions").forEach((wrapper) => {
+    const subActions = wrapper.querySelector<HTMLElement>(".sub-actions");
+    const subBtns = Array.from(wrapper.querySelectorAll<HTMLElement>(".sub-btn"));
+    let active: HTMLElement | null = null;
+
+    const setFill = (btn: HTMLElement, origin: "left" | "right", scale: 0 | 1) => {
+      btn.style.setProperty("--fill-origin", origin);
+      btn.style.setProperty("--fill-scale", String(scale));
+    };
+
+    subBtns.forEach((btn) => {
+      btn.addEventListener("pointerenter", () => {
+        if (active && active !== btn) {
+          const movingRight =
+            btn.getBoundingClientRect().left > active.getBoundingClientRect().left;
+          if (movingRight) {
+            setFill(active, "right", 0);
+            setFill(btn, "left", 1);
+          } else {
+            setFill(active, "left", 0);
+            setFill(btn, "right", 1);
+          }
+        } else if (!active) {
+          setFill(btn, "left", 1);
+        }
+        active = btn;
+      });
+    });
+
+    subActions?.addEventListener("pointerleave", () => {
+      if (active) {
+        setFill(active, "left", 0);
+        active = null;
+      }
+    });
+  });
+</script>
 
 <style>
   .reel-panel {
-    position: absolute;
-    top: 1.5rem;
-    left: 1.5rem;
-    right: 1.5rem;
-    height: 25.6rem;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 4 / 5;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
     background: linear-gradient(180deg, rgba(7, 7, 9, 0) 0%, rgba(7, 7, 9, 1) 100%);
   }
 
   @media (min-width: 768px) {
     .reel-panel {
-      top: 3rem;
-      left: 3rem;
-      right: 3rem;
-      height: 35rem;
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .reel-panel {
+      aspect-ratio: 16 / 7;
     }
   }
 
   .video-placeholder {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.35;
     background: url("https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1280")
       center / cover;
     filter: grayscale(1) contrast(1.2) brightness(0.6);
+    transition: transform 0.7s ease;
+  }
+
+  @media (hover: hover) {
+    .reel-panel:hover .video-placeholder {
+      transform: scale(1.05);
+    }
+  }
+
+  .reel-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2);
   }
 
   .play-actions {
-    position: relative;
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    transform: translateY(-3rem);
+    gap: var(--space-2);
   }
 
   .play-btn {
-    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 1.5rem;
-    border: 1px solid rgba(244, 244, 245, 0.3);
-    padding: 1.25rem 3rem;
-    overflow: hidden;
-    background: transparent;
+    gap: var(--space-2);
+    min-height: var(--touch-target);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: rgba(7, 7, 9, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: var(--color-text);
     cursor: pointer;
     transition: border-color 0.3s ease;
-    isolation: isolate;
   }
 
-  .play-btn:hover {
-    border-color: var(--color-accent);
+  .play-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    line-height: var(--leading-label);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-mini);
   }
 
+  .play-icon {
+    width: var(--space-2);
+    height: var(--space-2);
+    fill: currentColor;
+  }
+
+  /* Sub-buttons: revealed on hover where hover exists, always shown on touch. */
   .sub-actions {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding-top: 1rem;
     display: flex;
-    gap: 0.75rem;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    pointer-events: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-1);
   }
 
-  .play-actions:hover .sub-actions,
-  .play-actions.open .sub-actions {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  @media (hover: none) {
-    .play-actions:hover .sub-actions {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
+  @media (hover: hover) {
+    .play-btn:hover {
+      border-color: var(--color-accent);
     }
 
-    .play-actions.open .sub-actions {
+    .sub-actions {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .play-actions:hover .sub-actions,
+    .play-actions:focus-within .sub-actions {
       opacity: 1;
       visibility: visible;
-      pointer-events: auto;
     }
   }
 
   .sub-btn {
     position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(244, 244, 245, 0.3);
-    padding: 0.75rem 1.5rem;
-    overflow: hidden;
-    background: transparent;
+    min-height: var(--touch-target);
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: rgba(7, 7, 9, 0.4);
     color: var(--color-text);
-    cursor: pointer;
-    transition: border-color 0.3s ease;
-    isolation: isolate;
+    text-decoration: none;
     white-space: nowrap;
+    transition: border-color 0.3s ease;
   }
 
-  .sub-btn:hover {
-    border-color: var(--color-accent);
+  @media (hover: hover) {
+    .sub-btn:hover {
+      border-color: var(--color-accent);
+    }
   }
 
   .sub-label {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: var(--text-mini);
+    line-height: var(--leading-mini);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.25em;
+    letter-spacing: var(--tracking-mini);
   }
 
   .btn-fill {
@@ -168,34 +312,40 @@
     transition: transform 0.3s ease;
   }
 
-  .play-label {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-  }
-
-  .play-icon {
-    width: 1rem;
-    height: 1rem;
-    fill: currentColor;
-  }
-
-  .meta-bottom {
+  .meta {
     position: absolute;
-    bottom: 1rem;
-    left: 1.5rem;
+    left: var(--space-2);
+    right: var(--space-2);
+    bottom: var(--space-2);
     display: flex;
-    gap: 1.5rem;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--space-1);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .chip {
+    padding: var(--space-half) var(--space-1);
+    border-radius: var(--radius-sm);
+    background: rgba(7, 7, 9, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     font-family: var(--font-mono);
     font-size: 10px;
+    line-height: var(--leading-mini);
     text-transform: uppercase;
-    color: rgba(82, 82, 91, 0.8);
-    z-index: 20;
+    color: rgba(161, 161, 170, 0.9);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
   }
 
   .rec {
+    color: var(--color-accent);
     animation: pulse-rec 1.6s ease-in-out infinite;
   }
 
@@ -209,137 +359,119 @@
     }
   }
 
-  .meta-bottom-right {
-    position: absolute;
-    bottom: 1rem;
-    right: 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    color: rgba(82, 82, 91, 0.8);
-    z-index: 20;
-  }
-
-  .hero-overlay {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .overlay-title {
-    font-family: var(--font-display);
-    font-weight: 800;
-    text-transform: uppercase;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    color: var(--color-text);
-    margin: 0;
-    font-size: 6.09vw;
-    white-space: nowrap;
-  }
-
-  .overlay-tagline {
-    font-family: var(--font-mono);
-    font-size: 0.585rem;
-    color: var(--color-accent);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    line-height: 1.6;
-    margin: 0.75rem 0 0;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 1024px) {
-    .play-btn {
-      padding: 1rem 2.25rem;
-      gap: 1rem;
-    }
-
-    .play-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.25em;
-    }
-  }
-
-  @media (max-width: 1024px) and (orientation: landscape) {
-    .reel-panel {
-      height: auto;
-      bottom: 1.5rem;
-    }
-
-    .play-actions {
+  @media (max-width: 767px) {
+    .chip-optional {
       display: none;
     }
+  }
 
-    .hero-overlay {
-      display: flex;
-      position: absolute;
-      bottom: 10%;
-      left: 0;
-      right: 0;
-    }
-
-    .meta-bottom,
-    .meta-bottom-right {
-      bottom: 0.5rem;
+  @media (min-width: 768px) {
+    .meta {
+      left: var(--space-3);
+      right: var(--space-3);
+      bottom: var(--space-3);
     }
   }
 
-  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-    .reel-panel {
-      bottom: 3rem;
-    }
-
-    .meta-bottom,
-    .meta-bottom-right {
-      bottom: 0.75rem;
+  @media (prefers-reduced-motion: reduce) {
+    .rec {
+      animation: none;
     }
   }
 
-  @media (min-width: 1025px) {
-    .reel-panel {
-      height: auto;
-      bottom: calc(23.91rem + 6.3vw);
+  /* ---------- Player (shared) ---------- */
+  .player-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+
+  .player-frame :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  /* Bar above the video: title chip + close. Kept off the video so it never covers YouTube's controls. */
+  .player-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-1);
+  }
+
+  .player-close {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--touch-target);
+    height: var(--touch-target);
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 50%;
+    background: rgba(7, 7, 9, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+
+  .player-close svg {
+    width: var(--space-2);
+    height: var(--space-2);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  @media (hover: hover) {
+    .player-close:hover {
+      border-color: var(--color-accent);
     }
   }
 
-  @media (max-width: 768px) and (orientation: portrait) {
-    .reel-panel {
-      height: auto;
-      bottom: 14rem;
-    }
+  /* ---------- Playing ---------- */
+  /* While playing, the panel sizes to bar + 16:9 video at every width. */
+  .reel-panel.is-playing {
+    aspect-ratio: auto;
+    /* Never taller than the space under the sticky header (with a --space-2 gap above
+       and below): cap the width from the height. */
+    max-width: min(
+      100%,
+      (100dvh - var(--header-height) - 2 * var(--space-2) - var(--touch-target) - 3 * var(--space-1)) * 16 / 9 +
+        2 * var(--space-1)
+    );
+    margin-inline: auto;
+    padding: var(--space-1);
+    background: var(--color-surface);
+    scroll-margin-top: calc(var(--header-height) + var(--space-2));
+  }
 
-    .overlay-tagline {
-      font-size: 0.54rem;
-    }
+  .reel-panel.is-playing > :not(.inline-player) {
+    display: none;
+  }
 
-    .play-btn {
-      padding: 0.75rem 1.5rem;
-      gap: 0.75rem;
-    }
+  .inline-player[hidden] {
+    display: none;
+  }
 
-    .play-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-    }
+  .inline-player .player-frame {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
 
-    .play-icon {
-      width: 0.75rem;
-      height: 0.75rem;
-    }
-
-    .meta-bottom {
-      gap: 0.75rem;
-      left: 1rem;
-      bottom: 0.75rem;
-      font-size: 9px;
-    }
-
-    .meta-bottom-right {
-      bottom: 0.75rem;
-      right: 1rem;
-      font-size: 9px;
+  @media (prefers-reduced-motion: reduce) {
+    .player-close {
+      transition: none;
     }
   }
 </style>
+

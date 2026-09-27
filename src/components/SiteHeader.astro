@@ -6,7 +6,7 @@ interface Props {
 
 const defaultNav = [
   { label: "Expertise", href: "/expertise" },
-  { label: "Journal", href: "/journal" },
+  { label: "Journal", href: "/#journal" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -16,7 +16,7 @@ const hasMiddle = Astro.slots.has("middle");
 
 <header
   class:list={[
-    "grid grid-cols-[1fr_auto_1fr] items-start w-full relative z-30 px-3 py-2 md:px-4 md:py-3",
+    "site-header grid grid-cols-[1fr_auto_1fr] items-start w-full relative z-30",
     { sticky: sticky },
   ]}
 >
@@ -48,38 +48,23 @@ const hasMiddle = Astro.slots.has("middle");
 </header>
 
 <style>
-  header {
-    padding-top: 0.75rem;
+  .site-header {
+    padding: var(--space-2) var(--page-margin);
   }
 
-  header.sticky {
+  .site-header.sticky {
     position: sticky;
     top: 0;
     z-index: 20;
-    background-color: var(--color-bg);
-    border-bottom: 1px solid rgba(244, 244, 245, 0.1);
+    align-items: center;
+    background-color: rgba(7, 7, 9, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .middle {
     align-self: center;
-  }
-
-  @media (min-width: 768px) {
-    header {
-      padding-top: 1rem;
-    }
-  }
-
-  @media (max-width: 1024px) and (orientation: landscape) {
-    header {
-      padding-top: 0.5rem;
-    }
-  }
-
-  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-    header {
-      padding-top: 0.75rem;
-    }
   }
 
   .brand {
@@ -99,7 +84,7 @@ const hasMiddle = Astro.slots.has("middle");
 
   .brand-m {
     font-family: var(--font-serif);
-    font-size: 1.98rem;
+    font-size: var(--text-title);
     font-weight: 600;
     letter-spacing: -0.04em;
     color: rgba(82, 82, 91, 0.8);
@@ -107,7 +92,7 @@ const hasMiddle = Astro.slots.has("middle");
 
   .brand-s {
     font-family: var(--font-serif);
-    font-size: 2.16rem;
+    font-size: 28px;
     font-weight: 400;
     font-style: italic;
     letter-spacing: -0.02em;
@@ -117,7 +102,7 @@ const hasMiddle = Astro.slots.has("middle");
 
   .brand-sub {
     font-family: var(--font-mono);
-    font-size: 0.585rem;
+    font-size: 9px;
     font-weight: 400;
     color: rgba(255, 51, 0, 0.55);
     margin-top: -2px;
@@ -125,68 +110,64 @@ const hasMiddle = Astro.slots.has("middle");
 
   .nav {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    gap: var(--space-2);
     text-align: right;
   }
 
   .nav-link {
+    display: inline-flex;
+    align-items: center;
     font-family: var(--font-mono);
-    font-size: 0.675rem;
-    letter-spacing: 0.1em;
+    font-size: 10px;
+    line-height: var(--leading-mini);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    color: rgba(82, 82, 91, 0.8);
+    color: #71717a;
     text-decoration: none;
-    display: inline-block;
-    padding-bottom: 2px;
     transition: color 0.2s ease;
   }
 
-  .nav-link:hover {
-    color: rgba(255, 51, 0, 0.55);
+  @media (hover: hover) {
+    .nav-link:hover {
+      color: rgba(255, 51, 0, 0.55);
+    }
   }
 
-  @media (max-width: 1024px) {
+  /* Touch: 48px tap targets, nav stays in a row. */
+  @media (hover: none) {
+    .nav-link {
+      min-height: var(--touch-target);
+    }
+
+    .site-header {
+      padding-block: var(--space-1);
+    }
+  }
+
+  @media (min-width: 768px) {
     .brand-m {
-      font-size: 1.62rem;
+      font-size: 32px;
     }
 
     .brand-s {
-      font-size: 1.8rem;
+      font-size: 36px;
     }
 
     .brand-sub {
-      font-size: 0.54rem;
+      font-size: 10px;
     }
 
     .nav-link {
-      font-size: 0.585rem;
+      font-size: var(--text-mini);
     }
   }
 
-  @media (max-width: 768px) {
+  /* Pointer devices from 768 up keep the original stacked, right-aligned nav. */
+  @media (min-width: 768px) and (hover: hover) {
     .nav {
-      flex-direction: row;
-      gap: 16px;
-    }
-
-    .nav-link {
-      font-size: 0.54rem;
-    }
-  }
-
-  @media (max-width: 768px) and (orientation: portrait) {
-    .brand-m {
-      font-size: 1.35rem;
-    }
-
-    .brand-s {
-      font-size: 1.53rem;
-    }
-
-    .brand-sub {
-      font-size: 0.495rem;
-      margin-top: -1px;
+      flex-direction: column;
+      gap: var(--space-1);
     }
   }
 </style>
