@@ -1,6 +1,7 @@
 ---
 // Journal entries as a card grid. 1 col phone, 2 iPad portrait, 4 from 1024.
-// Video entries span 2 columns wherever there are at least 2.
+// Video entries span 2 columns wherever there are at least 2. The first (newest)
+// entry is featured across the full row.
 import JournalCard from "./JournalCard.astro";
 import type { JournalEntry } from "../data/journalEntries";
 
@@ -12,7 +13,7 @@ const { entries } = Astro.props;
 ---
 
 <div class="journal-grid">
-  {entries.map((entry) => <JournalCard entry={entry} />)}
+  {entries.map((entry, i) => <JournalCard entry={entry} featured={i === 0} />)}
 </div>
 
 <style>
