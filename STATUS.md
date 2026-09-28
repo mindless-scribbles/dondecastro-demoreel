@@ -34,14 +34,11 @@ Ready to ship except for the next item. Don reviewed it on the draft deploy and 
 - `npm run journal:from-instagram -- <export.zip> --list | --pick N --slug s --category C`: HTML export → entry folder. Hashtags dropped, @handles linked, ffmpeg poster for reels. Export used: `/mnt/b/Downloads/instagram-mindless_scribbles-2026-09-27-66FRlYtW.zip` (last year only).
 - Journal entry pages: header nav is Home / Expertise / Contact.
 
-**NEXT (Don's request): a better journal post layout.**
-- Current entry page, `src/pages/journal/[slug].astro` + `src/layouts/JournalEntryLayout.astro`:
-  - Grayscale hero image (55vh phone / 70vh) with the title overlaid.
-  - Meta row (Year / Format / Category / Ref).
-  - Then the YouTube embed, or local clips (`.clip`, max 80vh), or photos (`.photo`), then "View on Instagram/YouTube", then the Markdown body in a 720px column with a drop cap.
-  - Field Logs sidebar (sticky from 1024) and a "Proceed to project" footer.
-- It was designed for long YouTube articles. Short Instagram posts (one photo or a vertical reel and a caption) don't suit it: the hero repeats the photo, and the caption sits far below the media.
-- Start by asking Don what he dislikes and what he wants (e.g. Instagram-like media-first layout for photo/reel posts, carousel for multi-photo, where the title/date/caption go), then plan (touches >2 files).
+**NEXT: execute the approved build plan in `PLAN-journal-redesign.md` (steps 1–7).**
+- Approved by Don 2026-09-27. Start at Step 1; Step 0 (this handoff) is done. Don't re-plan unless something goes sideways.
+- Design reference: the "Personal style" boards on the canvas https://claude.ai/artifact/Lhhdx66g8qbWU7DCKM7jWx (photo post desktop + phone, video article, home + scrolled header). The "Porsche Design System" boards there are the rejected first pass, kept only for the reading-type sizes.
+- Scope in one line: media-first photo/reel layout and a reading-first video layout (YouTube facade), plain all-caps DON DE CASTRO header that fades in on the home page, Hanken Grotesk for reading text, Playfair and the Field Logs sidebar removed, orange accent kept only on the home tagline and the reel panel.
+- Decisions: sidebar removed; accent removed on Contact and Expertise too; ships on this branch as one PR.
 
 **Open items on this branch (Don may answer):**
 - Fallback titles: the gesture post reads "Yesterday's gesture drawing session with __etav__ and some doodles by…". Give it a real `title`, or suggest titles for all six.
