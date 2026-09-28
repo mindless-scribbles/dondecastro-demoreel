@@ -197,6 +197,11 @@ const summary = { res: `Up to ${topRes} ${FPS}`, duration: `${reels.length} Reel
 </script>
 
 <style>
+  /* The reel panel keeps the orange focus ring (the site default is off-white). */
+  .reel-panel :focus-visible {
+    outline-color: var(--color-accent);
+  }
+
   .reel-panel {
     position: relative;
     isolation: isolate;

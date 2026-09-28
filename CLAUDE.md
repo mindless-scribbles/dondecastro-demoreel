@@ -19,13 +19,11 @@ Portfolio and blog site for Don De Castro, a Technical Animator and Motion Edit 
 ## Site Structure
 
 ```
-/                     → Home (hero + featured reel + recent work)
-/reel                 → Demo Reels page (primary reels, embedded video)
-/work                 → Portfolio / Selected Work (project cards with detail pages)
-/work/[slug]          → Individual project page
-/blog                 → Blog index (filterable by tag)
-/blog/[slug]          → Individual blog post (MDX, supports interactive components)
-/about                → Bio, resume download link, contact info
+/                     → Home (reel panel + hero + journal grid, newest entry featured)
+/journal              → Full journal archive
+/journal/[slug]       → Journal entry (media layout for photos/reels, article layout for YouTube posts)
+/expertise            → Bio and resume download
+/contact              → Contact form and details
 ```
 
 ## Content Collections
@@ -70,15 +68,18 @@ sortOrder: number       # manual sort for portfolio page
 ### Aesthetic
 Refined, cinematic, dark-themed. Think high-end motion graphics studio site, not generic portfolio template. The work should be the hero; the design supports it without competing.
 
+STYLE_GUIDE.md is the source of truth for the as-built tokens and patterns.
+
 ### Typography
-- Display/headings: A distinctive sans-serif (e.g., Syne, Clash Display, or similar; never Inter, Roboto, or Arial)
-- Body: A clean, readable sans-serif that pairs well (e.g., Outfit, General Sans, Satoshi)
-- Monospace (for code in blog posts): JetBrains Mono or similar
+- Display/headings and the header brand: Syne (never Inter, Roboto, or Arial)
+- Labels, nav, metadata, UI: Space Mono
+- Reading text (journal articles and captions): Hanken Grotesk
+- No serif anywhere
 
 ### Color Palette
-- Background: Near-black (#0a0a0a or similar dark tone)
-- Text: Off-white (#e8e8e8) for body, brighter white for headings
-- Accent: A single bold accent color (to be decided, something that pops against dark; consider electric blue, amber, or a warm highlight)
+- Background: near-black #070709
+- Text: off-white #f4f4f5
+- Monochrome: the work carries the color. The #ff3300 accent is used only on the home page tagline and the reel panel.
 - Subtle grays for borders, cards, secondary text
 
 ### Layout Principles

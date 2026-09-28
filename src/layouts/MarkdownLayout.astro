@@ -93,13 +93,14 @@ const expertiseNav = [
     text-transform: uppercase;
     letter-spacing: var(--tracking-mini);
     text-decoration: none;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, color 0.3s ease;
   }
 
+  /* Off-white fill; the label flips to the background color while filled. */
   .btn-fill {
     position: absolute;
     inset: 0;
-    background: var(--color-accent);
+    background: var(--color-text);
     z-index: -1;
     transform: scaleX(var(--fill-scale, 0));
     transform-origin: var(--fill-origin, left);
@@ -109,7 +110,8 @@ const expertiseNav = [
   @media (hover: hover) {
     .download-btn:hover {
       --fill-scale: 1;
-      border-color: var(--color-accent);
+      border-color: var(--color-text);
+      color: var(--color-bg);
     }
   }
 
@@ -161,7 +163,7 @@ const expertiseNav = [
     text-transform: uppercase;
     letter-spacing: var(--tracking-mini);
     margin: var(--space-4) 0 var(--space-half);
-    color: var(--color-accent);
+    color: var(--color-text);
   }
 
   .prose :global(p) {
@@ -179,7 +181,7 @@ const expertiseNav = [
 
   @media (hover: hover) {
     .prose :global(a:hover) {
-      color: rgba(255, 51, 0, 0.55);
+      color: var(--color-hover);
     }
   }
 
@@ -201,7 +203,7 @@ const expertiseNav = [
     content: "›";
     position: absolute;
     left: calc(-1 * var(--space-3));
-    color: var(--color-accent);
+    color: var(--color-muted);
   }
 
   .prose :global(hr) {

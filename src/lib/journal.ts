@@ -6,7 +6,10 @@ export interface JournalItem {
   slug: string;
   /** Stable, chronological: the oldest entry is [001]. */
   id: string;
+  /** Frontmatter title, or for untitled posts the caption's first sentence (cards, pager, <title>). */
   title: string;
+  /** No frontmatter title: the entry page shows only the caption. */
+  untitled: boolean;
   subtitle?: string;
   date: Date;
   /** Has a YouTube embed or a local clip: shows the play badge. */
@@ -22,6 +25,11 @@ export interface JournalItem {
 }
 
 const TITLE_MAX = 80;
+
+/** "Sep 26, 2026". Dates are local calendar days stored as UTC midnight, so format in UTC. */
+export function formatDate(date: Date): string {
+  return date.toLocaleDateString("en-US", { timeZone: "UTC", year: "numeric", month: "short", day: "numeric" });
+}
 
 // Local clips beside entries, resolved to built (fingerprinted) URLs.
 const clipUrls = import.meta.glob<string>("/src/content/journal/**/*.mp4", {
@@ -83,6 +91,7 @@ export async function getJournal(): Promise<JournalItem[]> {
         slug: entry.id,
         id: `[${String(i + 1).padStart(3, "0")}]`,
         title: data.title ?? titleFromBody(entry.body),
+        untitled: !data.title,
         subtitle: data.subtitle,
         date: data.date,
         isVideo: Boolean(data.youtube) || videos.length > 0,

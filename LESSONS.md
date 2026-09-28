@@ -22,3 +22,9 @@ staging for 2 hours. -->
 **The surname is "De Castro": never let it break as "Don De / Castro":** `text-wrap: balance` on the home hero split the name after "De" on a portrait iPhone. Keep the full name on one line (`white-space: nowrap` with width-based sizing) and use `De&nbsp;Castro` wherever the name can wrap. Found 2026-09-27 on a real iPhone; desktop width checks didn't catch it.
 
 **Journal dates are the local upload date, not UTC:** the YouTube RSS feed's `published` is UTC, so Don's evening uploads in LA showed up a day late (3 of 5 entries were off by one). Use the watch page's `uploadDate` (local, with offset); `scripts/journal-from-youtube.mjs` does this. Found 2026-09-27.
+
+**Script-created elements need `:global()` in scoped styles:** Astro scopes `<style>` selectors with a `data-astro-cid-*` attribute, and elements made with `document.createElement` don't have it. The YouTube facade's iframe rendered at the 300×150 default until the rule became `.frame-video :global(iframe)`. ReelPanel avoids it the same way. Found 2026-09-27.
+
+**Hidden tabs don't run `requestAnimationFrame`:** scroll-driven checks through Claude in Chrome read stale values while `document.hidden` is true. Take a screenshot (which brings the tab forward) before trusting rAF-driven state.
+
+**Read the mockup board before building a layout, not just the plan's summary of it:** the plan said "body in a 720px column", and I squeezed the whole video article into a 960px column with the body off-center. On the canvas, the header and video span the page and only the body is a centered 720px column. Have a subagent pull the exact widths and alignment from the board first. Found 2026-09-27.

@@ -3,6 +3,7 @@
 @theme {
   --color-bg: #070709;
   --color-text: #f4f4f5;
+  /* Accent: home tagline (HomeHero) and ReelPanel only. */
   --color-accent: #ff3300;
   --color-muted: #52525b;
 
@@ -11,10 +12,13 @@
   --color-surface-raised: #1a1a1e;
   --color-border: rgba(244, 244, 245, 0.1);
   --color-border-strong: rgba(244, 244, 245, 0.3);
+  /* Neutral link/nav hover. */
+  --color-hover: rgba(244, 244, 245, 0.55);
 
   --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Space Mono", ui-monospace, monospace;
-  --font-serif: "Playfair Display", ui-serif, serif;
+  /* Reading text: journal articles and captions. */
+  --font-body: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
 
   /* Breakpoints (Tailwind md/lg/xl). Scoped CSS can't read vars in media
      queries, so use these literal values: 768 iPad portrait, 1024 iPad
@@ -60,6 +64,16 @@
   --leading-heading: 40px;
   --text-hero: clamp(40px, 6.4vw, 96px);
 
+  /* Reading type (--font-body): journal articles and captions. */
+  --text-read: 18px;
+  --leading-read: 1.7;
+  --text-lead: 22px;
+  --leading-lead: 1.6;
+  --text-subtitle: 24px;
+  --leading-subtitle: 1.4;
+  --text-read-heading: 28px;
+  --text-quote: 32px;
+
   --tracking-label: 0.1em;
   --tracking-mini: 0.2em;
 
@@ -73,12 +87,21 @@
 
   /* Sticky SiteHeader height, for sticky offsets below it. Mirrors
      src/components/SiteHeader.astro: update both together. */
-  --header-height: 68px;
+  --header-height: 57px;
 }
 
 @media (hover: none) {
   :root {
     --header-height: 65px;
+  }
+}
+
+/* Phone reading size. */
+@media (max-width: 767px) {
+  :root {
+    --text-read: 16px;
+    --leading-read: 1.6;
+    --text-lead: 18px;
   }
 }
 
@@ -143,11 +166,11 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-text);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: var(--color-accent);
+  background: rgba(244, 244, 245, 0.25);
   color: var(--color-text);
 }

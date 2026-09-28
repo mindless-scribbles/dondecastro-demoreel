@@ -1,15 +1,13 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import FieldLogsSidebar from "../components/FieldLogsSidebar.astro";
 
 interface Props {
   title: string;
   description?: string;
-  currentSlug: string;
 }
 
-const { title, description, currentSlug } = Astro.props;
+const { title, description } = Astro.props;
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -22,37 +20,38 @@ const navItems = [
   <div class="journal-entry-root relative z-10">
     <SiteHeader navItems={navItems} sticky />
 
-    <div class="entry-shell">
-      <FieldLogsSidebar currentSlug={currentSlug} />
-
-      <main class="entry-main">
-        <slot />
-      </main>
-    </div>
+    <main class="entry-main">
+      <slot />
+    </main>
   </div>
 </BaseLayout>
 
+<!-- Article and caption bodies are Markdown (src/content/journal), so these can't be scoped. -->
 <style is:global>
-  .journal-entry-root .entry-main .article-container p {
-    margin: 0 0 var(--space-4);
-    font-size: var(--text-body);
-    font-weight: 400;
-    line-height: var(--leading-body);
-    color: rgba(244, 244, 245, 0.85);
-    text-align: justify;
+  .journal-entry-root .prose {
+    font-family: var(--font-body);
+    font-size: var(--text-read);
+    line-height: var(--leading-read);
+    color: var(--color-text);
   }
 
-  /* Article body is Markdown (src/content/journal), so these can't be scoped. */
-  .journal-entry-root .content-body > p:first-of-type::first-letter {
-    font-family: var(--font-serif);
-    float: left;
-    font-size: var(--space-10);
-    line-height: var(--space-10);
-    margin-right: var(--space-2);
-    color: var(--color-accent);
+  .journal-entry-root .prose p {
+    margin: 0 0 1.2em;
   }
 
-  .journal-entry-root .content-body a {
+  .journal-entry-root .prose > :last-child {
+    margin-bottom: 0;
+  }
+
+  .journal-entry-root .prose h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-read-heading);
+    line-height: 1.3;
+  }
+
+  .journal-entry-root .prose a {
     color: var(--color-text);
     text-decoration: underline;
     text-decoration-color: var(--color-border-strong);
@@ -61,78 +60,45 @@ const navItems = [
   }
 
   @media (hover: hover) {
-    .journal-entry-root .content-body a:hover {
-      color: rgba(255, 51, 0, 0.55);
+    .journal-entry-root .prose a:hover {
+      color: var(--color-hover);
     }
   }
 
-  .journal-entry-root .content-body blockquote {
+  .journal-entry-root .prose blockquote {
     margin: var(--space-6) 0;
-    padding-left: var(--space-3);
-    border-left: 2px solid var(--color-accent);
+    padding-block: var(--space-4);
+    border-block: 1px solid var(--color-border);
   }
 
-  .journal-entry-root .entry-main .article-container blockquote p {
+  .journal-entry-root .prose blockquote p {
     margin: 0;
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
+    font-weight: 600;
     font-size: var(--text-title);
-    font-style: italic;
     line-height: var(--leading-title);
-    text-align: left;
-    color: var(--color-text);
   }
 
   @media (min-width: 768px) {
-    .journal-entry-root .content-body blockquote {
+    .journal-entry-root .prose blockquote {
       margin-block: var(--space-8);
-      padding-left: var(--space-4);
     }
 
-    .journal-entry-root .entry-main .article-container blockquote p {
-      font-size: var(--text-heading);
+    .journal-entry-root .prose blockquote p {
+      font-size: var(--text-quote);
       line-height: var(--leading-heading);
     }
   }
 
-  .journal-entry-root .inline-metadata {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    color: var(--color-accent);
-    font-weight: 700;
-    font-size: var(--text-mini);
-    line-height: var(--leading-mini);
-    letter-spacing: var(--tracking-label);
-    border: 1px solid var(--color-accent);
-    border-radius: var(--radius-sm);
-    padding: 0 var(--space-1);
-    margin: 0 var(--space-half);
-    vertical-align: middle;
-    transform: translateY(-1px);
-    font-family: var(--font-mono);
+  @media (prefers-reduced-motion: reduce) {
+    .journal-entry-root .prose a {
+      transition: none;
+    }
   }
 </style>
 
 <style>
   .journal-entry-root {
     min-height: 100vh;
-  }
-
-  .entry-shell {
-    display: grid;
-    /* 320 = 40 × 8 */
-    grid-template-columns: 320px 1fr;
-    min-height: calc(100vh - var(--header-height));
-    align-items: start;
-  }
-
-  .entry-main {
-    min-width: 0;
-  }
-
-  @media (max-width: 1023px) {
-    .entry-shell {
-      grid-template-columns: 1fr;
-    }
   }
 </style>
