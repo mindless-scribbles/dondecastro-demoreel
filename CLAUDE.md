@@ -11,7 +11,7 @@ Portfolio and blog site for Don De Castro, a Technical Animator and Motion Edit 
 
 - **Framework:** Astro (astro.build)
 - **Styling:** Tailwind CSS 4
-- **Content:** Astro Content Collections with MDX for blog posts
+- **Content:** Astro Content Collections (Markdown); the journal is `src/content/journal/`
 - **Interactive embeds:** Three.js, p5.js, GLSL (loaded per-post, not globally)
 - **Deployment:** Netlify via GitHub (auto-deploy on push to `main`)
 - **Domain:** www.dondecastro.com
@@ -19,28 +19,33 @@ Portfolio and blog site for Don De Castro, a Technical Animator and Motion Edit 
 ## Site Structure
 
 ```
-/                     → Home (hero + featured reel + recent work)
-/reel                 → Demo Reels page (primary reels, embedded video)
-/work                 → Portfolio / Selected Work (project cards with detail pages)
-/work/[slug]          → Individual project page
-/blog                 → Blog index (filterable by tag)
-/blog/[slug]          → Individual blog post (MDX, supports interactive components)
-/about                → Bio, resume download link, contact info
+/                     → Home (reel panel + hero + journal grid, newest entry featured)
+/journal              → Full journal archive
+/journal/[slug]       → Journal entry (media layout for photos/reels, article layout for YouTube posts)
+/expertise            → Bio and resume download
+/contact              → Contact form and details
 ```
 
 ## Content Collections
 
-### Blog Posts (`src/content/blog/`)
-Frontmatter schema:
+### Journal (`src/content/journal/`)
+The journal is the blog: the site is where Don posts first. One folder per entry, `YYYY-MM-DD-slug/index.md`, with that entry's photos beside it. Schema lives in `src/content.config.ts`; `src/lib/journal.ts` (`getJournal()`) sorts by date, assigns stable ids (oldest = [001]) and is what every page reads.
 ```yaml
-title: string
-date: date
-description: string
-tags: string[]          # e.g. ["rigging", "math", "touchdesigner", "houdini", "three.js"]
-thumbnail: string       # path to thumbnail image
-videoEmbed: string?     # optional YouTube/Vimeo URL
-draft: boolean
+slug: string            # URL: /journal/<slug>
+title: string?          # optional; untitled posts use the body's first line
+date: date              # local date (not UTC)
+subtitle: string?
+format: string          # VIDEO, PHOTO, CAROUSEL
+category: string        # RIGGING, TOOLS, ANIM, ANIM/VFX, ...
+tags: string[]?         # extra card chips
+youtube: string?        # video id, embedded above the article
+cover: image?           # local; else YouTube thumb, else first photo
+images: {src, alt}[]?   # local photos, optimized by Astro
+videos: {src, poster}[]? # local clips (./clip.mp4), e.g. Instagram reels
+source: {platform: youtube|instagram, url}?
+draft: boolean?         # hidden in production builds
 ```
+The Markdown body is the article or caption. The newest entry is automatically the featured card.
 
 ### Projects (`src/content/work/`)
 Frontmatter schema:
@@ -63,15 +68,18 @@ sortOrder: number       # manual sort for portfolio page
 ### Aesthetic
 Refined, cinematic, dark-themed. Think high-end motion graphics studio site, not generic portfolio template. The work should be the hero; the design supports it without competing.
 
+STYLE_GUIDE.md is the source of truth for the as-built tokens and patterns.
+
 ### Typography
-- Display/headings: A distinctive sans-serif (e.g., Syne, Clash Display, or similar; never Inter, Roboto, or Arial)
-- Body: A clean, readable sans-serif that pairs well (e.g., Outfit, General Sans, Satoshi)
-- Monospace (for code in blog posts): JetBrains Mono or similar
+- Display/headings and the header brand: Syne (never Inter, Roboto, or Arial)
+- Labels, nav, metadata, UI: Space Mono
+- Reading text (journal articles and captions): Hanken Grotesk
+- No serif anywhere
 
 ### Color Palette
-- Background: Near-black (#0a0a0a or similar dark tone)
-- Text: Off-white (#e8e8e8) for body, brighter white for headings
-- Accent: A single bold accent color (to be decided, something that pops against dark; consider electric blue, amber, or a warm highlight)
+- Background: near-black #070709
+- Text: off-white #f4f4f5
+- Monochrome: the work carries the color. The #ff3300 accent is used only on the home page tagline and the reel panel.
 - Subtle grays for borders, cards, secondary text
 
 ### Layout Principles
@@ -113,20 +121,13 @@ Build these as reusable Astro/MDX components:
 - **Blog content:** Same embed approach for longer videos. For short clips or loops, consider self-hosted MP4/WebM if files are small (<20MB), otherwise embed from YouTube.
 - **Interactive demos:** Rendered client-side via Three.js or p5.js components in MDX.
 
-## Blog Post Workflow
+## Journal Post Workflow
 
-1. Create new `.mdx` file in `src/content/blog/`
-2. Add frontmatter (title, date, tags, thumbnail, etc.)
-3. Write content in Markdown
-4. For interactive demos, import and use components:
-   ```mdx
-   import InteractiveCanvas from '../../components/InteractiveCanvas.astro';
-
-   Here's the rigging concept in action:
-
-   <InteractiveCanvas type="threejs" src="/demos/rig-demo.js" />
-   ```
-5. Commit and push; Netlify auto-deploys.
+- **From a YouTube video:** `npm run journal:from-youtube <url> [--slug my-slug] [--date YYYY-MM-DD]` creates the entry with the title, local upload date and embed filled in. Then fill in `subtitle`, `category` and the article.
+- **Photo post:** create `src/content/journal/YYYY-MM-DD-slug/index.md`, drop the photos in the same folder, list them under `images:` (`src: ./photo.jpg`), and write the caption as the body. Title is optional.
+- Commit and push; Netlify auto-deploys from `main`. Preview first with a Netlify draft deploy (see STATUS.md).
+- **From Instagram:** request "Download your information" (Posts + Reels, **All time**), then `npm run journal:from-instagram -- <export.zip> --list` and `... --pick N --slug my-slug --category DRAWING`. It copies the photos or clip (plus an ffmpeg poster frame), converts the caption to Markdown (@handles become links) and links `source` to the profile, since the export has no post URLs. Fill in the image alt text afterwards.
+- Not yet built: a phone-friendly posting page that writes these same files.
 
 ## Development Commands
 

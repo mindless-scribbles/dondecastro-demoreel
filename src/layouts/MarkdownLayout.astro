@@ -93,13 +93,14 @@ const expertiseNav = [
     text-transform: uppercase;
     letter-spacing: var(--tracking-mini);
     text-decoration: none;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, color 0.3s ease;
   }
 
+  /* Off-white fill; the label flips to the background color while filled. */
   .btn-fill {
     position: absolute;
     inset: 0;
-    background: var(--color-accent);
+    background: var(--color-text);
     z-index: -1;
     transform: scaleX(var(--fill-scale, 0));
     transform-origin: var(--fill-origin, left);
@@ -109,7 +110,8 @@ const expertiseNav = [
   @media (hover: hover) {
     .download-btn:hover {
       --fill-scale: 1;
-      border-color: var(--color-accent);
+      border-color: var(--color-text);
+      color: var(--color-bg);
     }
   }
 
@@ -161,14 +163,16 @@ const expertiseNav = [
     text-transform: uppercase;
     letter-spacing: var(--tracking-mini);
     margin: var(--space-4) 0 var(--space-half);
-    color: var(--color-accent);
+    color: var(--color-text);
   }
 
+  /* Reading text matches the journal entries (STYLE_GUIDE §2). */
   .prose :global(p) {
-    font-size: var(--text-body);
-    line-height: var(--leading-body);
+    font-family: var(--font-body);
+    font-size: var(--text-read);
+    line-height: var(--leading-read);
     margin: 0 0 var(--space-2);
-    color: rgba(244, 244, 245, 0.85);
+    color: var(--color-text);
   }
 
   .prose :global(a) {
@@ -179,7 +183,7 @@ const expertiseNav = [
 
   @media (hover: hover) {
     .prose :global(a:hover) {
-      color: rgba(255, 51, 0, 0.55);
+      color: var(--color-hover);
     }
   }
 
@@ -190,10 +194,11 @@ const expertiseNav = [
   }
 
   .prose :global(li) {
-    font-size: var(--text-body);
-    line-height: var(--leading-body);
+    font-family: var(--font-body);
+    font-size: var(--text-read);
+    line-height: var(--leading-read);
     margin: 0 0 var(--space-1);
-    color: rgba(244, 244, 245, 0.85);
+    color: var(--color-text);
     position: relative;
   }
 
@@ -201,7 +206,7 @@ const expertiseNav = [
     content: "›";
     position: absolute;
     left: calc(-1 * var(--space-3));
-    color: var(--color-accent);
+    color: var(--color-muted);
   }
 
   .prose :global(hr) {
@@ -212,7 +217,8 @@ const expertiseNav = [
 
   .prose :global(strong) {
     color: var(--color-text);
-    font-weight: 700;
+    /* Hanken Grotesk is loaded at 400 and 600. */
+    font-weight: 600;
   }
 
   .prose :global(em) {

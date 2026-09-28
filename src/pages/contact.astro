@@ -173,7 +173,7 @@ const archiveUpdated = "04.14.26";
   }
 
   .form-group:focus-within {
-    border-bottom-color: var(--color-accent);
+    border-bottom-color: var(--color-text);
   }
 
   .form-label {
@@ -216,8 +216,8 @@ const archiveUpdated = "04.14.26";
     line-height: var(--leading-mini);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    color: var(--color-accent);
-    border: 1px solid var(--color-accent);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-strong);
     border-radius: var(--radius-md);
     padding: var(--space-2);
   }
@@ -239,7 +239,7 @@ const archiveUpdated = "04.14.26";
     background: transparent;
     color: var(--color-text);
     cursor: pointer;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, color 0.3s ease;
   }
 
   .submit-label {
@@ -251,10 +251,11 @@ const archiveUpdated = "04.14.26";
     letter-spacing: var(--tracking-mini);
   }
 
+  /* Off-white fill; the label flips to the background color while filled. */
   .btn-fill {
     position: absolute;
     inset: 0;
-    background: var(--color-accent);
+    background: var(--color-text);
     z-index: -1;
     transform: scaleX(var(--fill-scale, 0));
     transform-origin: var(--fill-origin, left);
@@ -296,10 +297,9 @@ const archiveUpdated = "04.14.26";
     width: var(--space-1);
     height: var(--space-1);
     border-radius: 50%;
-    background: var(--color-accent);
+    background: var(--color-text);
     margin: 0 var(--space-half);
     vertical-align: middle;
-    box-shadow: 0 0 6px var(--color-accent);
   }
 
   .email-btn {
@@ -322,7 +322,7 @@ const archiveUpdated = "04.14.26";
     line-height: var(--leading-mini);
     letter-spacing: var(--tracking-label);
     color: var(--color-bg);
-    background: var(--color-accent);
+    background: var(--color-text);
     border-radius: var(--radius-sm);
     padding: var(--space-half) var(--space-1);
     white-space: nowrap;
@@ -338,13 +338,14 @@ const archiveUpdated = "04.14.26";
   @media (hover: hover) {
     .submit-btn:hover {
       --fill-scale: 1;
-      border-color: var(--color-accent);
+      border-color: var(--color-text);
+      color: var(--color-bg);
     }
 
-    /* §4: hover is the accent at 55%. */
+    /* §4: neutral 55% hover. */
     .contact-details a:hover,
     .email-btn:hover {
-      color: rgba(255, 51, 0, 0.55);
+      color: var(--color-hover);
     }
   }
 

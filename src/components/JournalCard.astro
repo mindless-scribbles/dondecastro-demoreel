@@ -1,26 +1,24 @@
 ---
-// One journal entry as a rounded card. Links to its entry page when it has one.
-import type { JournalEntry } from "../data/journalEntries";
+// One journal entry as a rounded card linking to its entry page.
+import type { JournalItem } from "../lib/journal";
 
 interface Props {
-  entry: JournalEntry;
+  entry: JournalItem;
   /** Newest entry: spans the full grid row, thumb beside the meta from 1024 up. */
   featured?: boolean;
 }
 
 const { entry, featured = false } = Astro.props;
-const Tag = entry.hasPage ? "a" : "article";
-const linkProps = entry.hasPage ? { href: `/journal/${entry.slug}` } : {};
 ---
 
-<Tag
-  class:list={["card", { "card-video": entry.video, "card-link": entry.hasPage, "card-featured": featured }]}
-  {...linkProps}
+<a
+  class:list={["card", "card-link", { "card-video": entry.wide, "card-featured": featured }]}
+  href={`/journal/${entry.slug}`}
 >
-  <div class="thumb" style={`--src: url('${entry.image}');`}>
+  <div class="thumb" style={`--src: url('${entry.thumb}');`}>
     <div class="thumb-base"></div>
     {
-      entry.video && (
+      entry.isVideo && (
         <span class="play-badge" aria-hidden="true">
           <svg viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z" />
@@ -31,8 +29,9 @@ const linkProps = entry.hasPage ? { href: `/journal/${entry.slug}` } : {};
   </div>
   <div class="meta">
     {featured && <span class="kicker">Latest <span class="id">{entry.id}</span></span>}
+    {/* Untitled photo and reel posts show no title; screen readers still get the caption's first sentence. */}
     <div class="title-row">
-      <span class="title">{entry.title}</span>
+      <span class:list={["title", { "visually-hidden": entry.untitled }]}>{entry.title}</span>
       {!featured && <span class="id">{entry.id}</span>}
     </div>
     {featured && entry.subtitle && <p class="subtitle">{entry.subtitle}</p>}
@@ -40,7 +39,7 @@ const linkProps = entry.hasPage ? { href: `/journal/${entry.slug}` } : {};
       {entry.tags.map((t) => <span class="tag">{t}</span>)}
     </div>
   </div>
-</Tag>
+</a>
 
 <style>
   .card {
@@ -78,7 +77,8 @@ const linkProps = entry.hasPage ? { href: `/journal/${entry.slug}` } : {};
     background-image: var(--src);
     background-size: cover;
     background-position: center;
-    filter: grayscale(0%) contrast(1.05);
+    /* Monochrome everywhere, including touch; color only on pointer hover. */
+    filter: grayscale(100%) contrast(1.15);
     transition: filter 0.4s ease, transform 0.6s ease;
   }
 
@@ -172,7 +172,7 @@ const linkProps = entry.hasPage ? { href: `/journal/${entry.slug}` } : {};
     line-height: var(--leading-mini);
     letter-spacing: var(--tracking-mini);
     text-transform: uppercase;
-    color: var(--color-accent);
+    color: var(--color-text);
   }
 
   .subtitle {
@@ -205,12 +205,17 @@ const linkProps = entry.hasPage ? { href: `/journal/${entry.slug}` } : {};
     }
   }
 
-  /* Grayscale → color on hover only where hover exists; touch shows color. */
-  @media (hover: hover) {
-    .thumb-base {
-      filter: grayscale(100%) contrast(1.15);
-    }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 
+  /* Grayscale → color on hover only where hover exists; touch stays grayscale. */
+  @media (hover: hover) {
     .card:hover {
       background: var(--color-surface-raised);
       border-color: var(--color-border-strong);
@@ -226,16 +231,16 @@ const linkProps = entry.hasPage ? { href: `/journal/${entry.slug}` } : {};
     }
 
     .card:hover .id {
-      color: var(--color-accent);
+      color: var(--color-text);
     }
 
     .card:hover .tag {
       color: var(--color-text);
-      background: rgba(255, 51, 0, 0.12);
+      background: rgba(244, 244, 245, 0.12);
     }
 
     .card:hover .play-badge {
-      background: var(--color-accent);
+      background: rgba(7, 7, 9, 0.8);
     }
   }
 

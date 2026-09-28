@@ -3,10 +3,10 @@
 // Video entries span 2 columns wherever there are at least 2. The first (newest)
 // entry is featured across the full row.
 import JournalCard from "./JournalCard.astro";
-import type { JournalEntry } from "../data/journalEntries";
+import type { JournalItem } from "../lib/journal";
 
 interface Props {
-  entries: JournalEntry[];
+  entries: JournalItem[];
 }
 
 const { entries } = Astro.props;

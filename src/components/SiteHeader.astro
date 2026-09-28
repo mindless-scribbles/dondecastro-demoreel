@@ -2,6 +2,8 @@
 interface Props {
   navItems?: { label: string; href: string }[];
   sticky?: boolean;
+  /** Home: the brand starts faint and turns white as the hero name scrolls away. */
+  fadeBrand?: boolean;
 }
 
 const defaultNav = [
@@ -10,7 +12,7 @@ const defaultNav = [
   { label: "Contact", href: "/contact" },
 ];
 
-const { navItems = defaultNav, sticky = false } = Astro.props;
+const { navItems = defaultNav, sticky = false, fadeBrand = false } = Astro.props;
 const hasMiddle = Astro.slots.has("middle");
 ---
 
@@ -19,14 +21,9 @@ const hasMiddle = Astro.slots.has("middle");
     "site-header grid grid-cols-[1fr_auto_1fr] items-start w-full relative z-30",
     { sticky: sticky },
   ]}
+  data-fade-brand={fadeBrand ? "" : undefined}
 >
-  <a href="/" class="brand col-start-1 justify-self-start" aria-label="MS — Creative Agency, home">
-    <span class="brand-letters">
-      <span class="brand-m">M</span>
-      <span class="brand-s">S</span>
-    </span>
-    <span class="brand-sub">Creative Agency</span>
-  </a>
+  <a href="/" class="brand col-start-1 justify-self-start" aria-label="Don De Castro, home">Don De&nbsp;Castro</a>
 
   {
     hasMiddle && (
@@ -36,7 +33,7 @@ const hasMiddle = Astro.slots.has("middle");
     )
   }
 
-  <nav class="nav col-start-3 justify-self-end">
+  <nav class="nav col-start-3 justify-self-end" aria-label="Main">
     {
       navItems.map((item) => (
         <a href={item.href} class="nav-link">
@@ -68,44 +65,16 @@ const hasMiddle = Astro.slots.has("middle");
   }
 
   .brand {
-    color: rgba(82, 82, 91, 0.8);
+    align-self: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-label);
+    line-height: var(--leading-label);
+    text-transform: uppercase;
+    white-space: nowrap;
     text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    line-height: 1;
-  }
-
-  .brand-letters {
-    display: flex;
-    align-items: baseline;
-    line-height: 1;
-  }
-
-  .brand-m {
-    font-family: var(--font-serif);
-    font-size: var(--text-title);
-    font-weight: 600;
-    letter-spacing: -0.04em;
-    color: rgba(82, 82, 91, 0.8);
-  }
-
-  .brand-s {
-    font-family: var(--font-serif);
-    font-size: 28px;
-    font-weight: 400;
-    font-style: italic;
-    letter-spacing: -0.02em;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(82, 82, 91, 0.8);
-  }
-
-  .brand-sub {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    font-weight: 400;
-    color: rgba(255, 51, 0, 0.55);
-    margin-top: -2px;
+    /* --brand-alpha is set by the fade script on the home page; 1 without JS. */
+    color: rgba(244, 244, 245, calc(0.2 + 0.8 * var(--brand-alpha, 1)));
   }
 
   .nav {
@@ -130,7 +99,7 @@ const hasMiddle = Astro.slots.has("middle");
 
   @media (hover: hover) {
     .nav-link:hover {
-      color: rgba(255, 51, 0, 0.55);
+      color: var(--color-hover);
     }
   }
 
@@ -145,19 +114,15 @@ const hasMiddle = Astro.slots.has("middle");
     }
   }
 
+  /* Pointer devices from 768: title size. Touch keeps 14px so it sits beside the nav row. */
+  @media (min-width: 768px) and (hover: hover) {
+    .brand {
+      font-size: var(--text-title);
+      line-height: var(--leading-title);
+    }
+  }
+
   @media (min-width: 768px) {
-    .brand-m {
-      font-size: 32px;
-    }
-
-    .brand-s {
-      font-size: 36px;
-    }
-
-    .brand-sub {
-      font-size: 10px;
-    }
-
     .nav-link {
       font-size: var(--text-mini);
     }
@@ -171,3 +136,31 @@ const hasMiddle = Astro.slots.has("middle");
     }
   }
 </style>
+
+<script>
+  // Home: fade the brand from 20% to full white as the hero name scrolls under the header.
+  const header = document.querySelector<HTMLElement>("[data-fade-brand]");
+  const heroTitle = document.querySelector<HTMLElement>(".hero-title");
+
+  if (header && heroTitle) {
+    let queued = false;
+
+    const update = () => {
+      queued = false;
+      // Scroll distance at which the hero title's bottom reaches the header's bottom.
+      const end = heroTitle.getBoundingClientRect().bottom + window.scrollY - header.offsetHeight;
+      const progress = end > 0 ? Math.min(Math.max(window.scrollY / end, 0), 1) : 1;
+      header.style.setProperty("--brand-alpha", progress.toFixed(3));
+    };
+
+    const queue = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+  }
+</script>

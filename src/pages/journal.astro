@@ -2,7 +2,9 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import JournalGrid from "../components/JournalGrid.astro";
-import { journalEntries } from "../data/journalEntries";
+import { getJournal } from "../lib/journal";
+
+const journalEntries = await getJournal();
 
 const navItems = [
   { label: "Home", href: "/" },

@@ -4,12 +4,14 @@ import SiteHeader from "../components/SiteHeader.astro";
 import ReelPanel from "../components/ReelPanel.astro";
 import HomeHero from "../components/HomeHero.astro";
 import JournalGrid from "../components/JournalGrid.astro";
-import { journalEntries } from "../data/journalEntries";
+import { getJournal } from "../lib/journal";
+
+const journalEntries = await getJournal();
 ---
 
 <BaseLayout>
   <div class="home-root relative z-10">
-    <SiteHeader sticky />
+    <SiteHeader sticky fadeBrand />
     <main class="page-container home">
       <ReelPanel />
       <HomeHero />

@@ -10,7 +10,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
-    "journal:from-youtube": "node scripts/journal-from-youtube.mjs"
+    "journal:from-youtube": "node scripts/journal-from-youtube.mjs",
+    "journal:from-instagram": "node scripts/journal-from-instagram.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.0",
