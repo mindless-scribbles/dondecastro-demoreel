@@ -44,7 +44,7 @@ Three fonts, defined in the `@theme` block of `src/styles/global.css`. Each has 
 
 ### Hanken Grotesk — reading text
 - Family: `var(--font-body)`, weights 400 / 600
-- Journal articles, captions and subtitles only. Everything else stays Space Mono.
+- Journal articles, captions and subtitles, and the Expertise page's paragraphs and bullets (`MarkdownLayout.astro`). Everything else stays Space Mono.
 - Reading tokens (`:root` in `global.css`):
 
 | Token | Value | Use |
@@ -57,11 +57,11 @@ Three fonts, defined in the `@theme` block of `src/styles/global.css`. Each has 
 
 ### Heading scale (prose and UI)
 
-From `src/layouts/MarkdownLayout.astro:77–114`:
-- h1 `clamp(2rem, 5vw, 3rem)`, uppercase, Syne
-- h2 `1.25rem`, uppercase
-- h3 `0.85rem`, uppercase
-- Body: `0.95rem` / `line-height: 1.65`
+From `src/layouts/MarkdownLayout.astro` (Expertise):
+- h1 `clamp(--text-heading, 5vw, --space-6)`, Syne 800 uppercase
+- h2 `--text-title`, Syne 600 uppercase
+- h3 `--text-label`, Space Mono 700 uppercase (job-title labels)
+- Paragraphs and bullets: Hanken Grotesk at `--text-read` / `--leading-read`, same as the journal
 
 Hero h1 uses `--text-hero` (see §3). It is a hero-only exception, not the prose scale.
 
